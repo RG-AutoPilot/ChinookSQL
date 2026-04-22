@@ -1,0 +1,5 @@
+code = "DM008"
+dialects = ["TEXT"]
+rules = ["(?i)(--.*\\bTODO\\b|--.*\\bFIXME\\b|--.*\\bHACK\\b|--.*\\bXXX\\b)"]
+description = "Placeholder comment (TODO/FIXME/HACK) found - resolve before merging to main"
+severity = "warning"

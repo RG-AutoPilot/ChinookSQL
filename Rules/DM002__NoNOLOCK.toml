@@ -1,0 +1,5 @@
+code = "DM002"
+dialects = ["TEXT"]
+rules = ["(?i)WITH\\s*\\(\\s*NOLOCK\\s*\\)"]
+description = "NOLOCK hint is not permitted - dirty reads can cause data integrity issues in production"
+severity = "error"

@@ -1,0 +1,5 @@
+code = "DM004"
+dialects = ["TEXT"]
+rules = ["(?i)(^|\\s)DROP\\s+TABLE\\s+(?!.*IF\\s+EXISTS)"]
+description = "DROP TABLE must include an existence check (IF EXISTS) to ensure idempotency"
+severity = "error"

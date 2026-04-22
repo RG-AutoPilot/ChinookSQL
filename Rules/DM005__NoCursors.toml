@@ -1,0 +1,5 @@
+code = "DM005"
+dialects = ["TEXT"]
+rules = ["(?i)(^|\\s)DECLARE\\s+\\w+\\s+CURSOR"]
+description = "CURSOR usage is not permitted - rewrite using set-based operations"
+severity = "warning"

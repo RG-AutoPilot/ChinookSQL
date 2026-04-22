@@ -1,0 +1,5 @@
+code = "DM001"
+dialects = ["TEXT"]
+rules = ["(?i)SELECT\\s+\\*"]
+description = "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
+severity = "error"

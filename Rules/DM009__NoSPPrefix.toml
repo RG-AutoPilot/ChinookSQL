@@ -1,0 +1,5 @@
+code = "DM009"
+dialects = ["TEXT"]
+rules = ["(?i)(CREATE|ALTER)\\s+PROCEDURE\\s+\\[?\\w+\\]?\\??\\[?sp_"]
+description = "Stored procedure names must not use the reserved 'sp_' prefix - use a project-specific prefix instead"
+severity = "warning"
