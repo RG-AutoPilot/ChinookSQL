@@ -139,10 +139,12 @@ displayName = "Production Database"
 [environments.Check]
 url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Check Database"
+provisioner = "clean"
 
 [environments.Build]
 url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Build Database"
+provisioner = "clean"
 
 [environments.Dev]
 url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
