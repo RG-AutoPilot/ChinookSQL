@@ -1,0 +1,5 @@
+code = "DM010"
+dialects = ["TEXT"]
+rules = ["(?i)(^|\\s)CONVERT\\s*\\(\\s*(VARCHAR|NVARCHAR|CHAR|NCHAR)\\s*,"]
+description = "CONVERT to string type detected without explicit style parameter - specify a style to prevent implicit conversion failures"
+severity = "warning"

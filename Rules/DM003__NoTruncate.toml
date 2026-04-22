@@ -1,0 +1,5 @@
+code = "DM003"
+dialects = ["TEXT"]
+rules = ["(?i)(^|\\s)TRUNCATE\\s+TABLE"]
+description = "TRUNCATE TABLE is not permitted in migration scripts - use DELETE with a WHERE clause"
+severity = "error"

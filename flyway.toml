@@ -14,8 +14,8 @@ baselineVersion = "001_20260422150833"
 baselineOnMigrate = true
 
   [flyway.check]
-  rulesLocation = "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\Rules"
-  rulesConfig = "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\sqlfluff.cfg"
+  rulesLocation = "Rules"
+  rulesConfig = "sqlfluff.cfg"
 
 [flyway.sqlserver.clean]
 mode = "all"
@@ -129,19 +129,19 @@ transportClrDataTypesAsBinary = false
   table = "AppConfig"
 
 [environments.Test]
-url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Test;encrypt=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Test;encrypt=true;trustServerCertificate=true"
 displayName = "Test Database"
 
 [environments.Prod]
-url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Production Database"
 
 [environments.Check]
-url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Check Database"
 
 [environments.Build]
-url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Build Database"
 
 [environments.Dev]

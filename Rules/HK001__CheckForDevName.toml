@@ -1,0 +1,5 @@
+code = "HK001"
+dialects = ["TEXT"]
+rules = ["(?i)(Huxley|Chris|Laura|Danny|Tyrone|Marko|Andrew|Rene|Foo|Bar)"]
+description = "Object name not permitted by naming standards - Stop naming objects after yourself!"
+severity = "error"

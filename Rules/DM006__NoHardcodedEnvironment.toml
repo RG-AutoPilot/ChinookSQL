@@ -1,0 +1,5 @@
+code = "DM006"
+dialects = ["TEXT"]
+rules = ["(?i)(\\bPROD\\b|\\bPRODUCTION\\b|\\bDEV\\b|\\bDEVELOPMENT\\b|\\bUAT\\b|\\bSTAGING\\b)"]
+description = "Hardcoded environment name detected - migrations must be environment-agnostic"
+severity = "error"
