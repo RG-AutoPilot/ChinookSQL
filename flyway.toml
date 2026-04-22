@@ -14,8 +14,8 @@ baselineVersion = "001"
 baselineOnMigrate = true
 
   [flyway.check]
-    rulesLocation = "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\Rules"
-	rulesConfig= "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\sqlfluff.cfg"
+  rulesLocation = "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\Rules"
+  rulesConfig = "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\sqlfluff.cfg"
 
 [flyway.sqlserver.clean]
 mode = "all"
@@ -127,35 +127,19 @@ transportClrDataTypesAsBinary = false
   [[redgateCompare.staticDataTables]]
   schema = "dbo"
   table = "AppConfig"
-  
+
 [environments.Test]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Test;encrypt=true;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Test;encrypt=true;trustServerCertificate=true"
 displayName = "Test Database"
 
 [environments.Prod]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Prod;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Production Database"
 
 [environments.Check]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Check;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Check Database"
-provisioner = "backup"
-
-[environments.Check.resolvers.backup]
-backupFilePath = "C:\\WorkingFolders\\FWD\\Chinook\\SqlServer\\migrations\\Chinook.bak"
-backupVersion = "001"
-
-  [environments.Check.resolvers.backup.sqlserver]
-  generateWithMove = true
 
 [environments.Build]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Build;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Build Database"
-provisioner = "backup"
-
-[environments.Build.resolvers.backup]
-backupFilePath = "C:\\WorkingFolders\\FWD\\Chinook\\SqlServer\\migrations\\Chinook.bak"
-backupVersion = "001"
-
-  [environments.Build.resolvers.backup.sqlserver]
-  generateWithMove = true					
