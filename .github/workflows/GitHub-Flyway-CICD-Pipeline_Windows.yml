@@ -62,7 +62,7 @@ jobs:
   build:
     name: Deploy Build
     # The type of runner that the job will run on
-    runs-on: "self-hosted" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+    runs-on: "huxLocal" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
     environment: 'build'
     env:
       stage: 'Build'
