@@ -14,7 +14,6 @@ baselineVersion = "001"
 baselineOnMigrate = true
 
   [flyway.check]
-	majorTolerance = 0
     rulesLocation = "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\Rules"
 	rulesConfig= "C:\\WorkingFolders\\FWD\\Chinook\\Shared_Files\\sqlfluff.cfg"
 
