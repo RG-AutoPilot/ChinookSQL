@@ -10,7 +10,7 @@ mixed = true
 outOfOrder = true
 schemaModelLocation = "schema-model"
 validateMigrationNaming = true
-baselineVersion = "001"
+baselineVersion = "001_20260422150833"
 baselineOnMigrate = true
 
   [flyway.check]
@@ -143,3 +143,6 @@ displayName = "Check Database"
 [environments.Build]
 url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Build Database"
+
+[environments.Dev]
+url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
