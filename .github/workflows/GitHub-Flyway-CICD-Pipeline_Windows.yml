@@ -62,15 +62,17 @@ jobs:
   build:
     name: Deploy Build
     # The type of runner that the job will run on
-    runs-on: "self-hosted" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+    runs-on: "huxLocal" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
     environment: 'build'
     env:
       stage: 'Build'
       displayName: 'Build'
-      DATABASE_NAME: 'AutoPilotBuild'
+      DATABASE_NAME: 'Chinook_Build'
       ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file. 
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
+      REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME }}"
+      REPORT_DATABASE_PASSWORD: "${{ secrets.REPORT_DATABASE_PASSWORD }}"
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
       EXECUTE_BUILD: 'true' # Turn to false to skip the build stage tasks
       publishArtifacts: 'true' # Turn to false to skip the artifact upload
@@ -97,21 +99,60 @@ jobs:
         if: ${{ env.EXECUTE_BUILD == 'true' && env.FLYWAY_AUTH_DISABLED != 'true' && success() }}
         run: |
          flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
-      # Step 2 - Ensure the Build Database is cleaned of all objects, meaning the build starts from scratch
-      - name: Clean Build DB
+      # Step 2 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
+      - name: Validate Migrate Scripts
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info clean info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" -cleanDisabled='false' "-environments.${{ env.ENVIRONMENT }}.provisioner=clean" ${{ env.CUSTOM_PARAMS }}
-      # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
-      - name: Migrate Build DB
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+      # Step 2a - Create Check Report (Drift Detection - Using Deployed Snapshot)
+      - name: Flyway Check Report - Dryrun
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" -cleanDisabled='false' -baselineOnMigrate="true" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
-      # Step 4 (Optional) - Undo all relevant migrations using corresponding rollback script, to validate they can be run. This helps to reduce the chance the script will fail during a real life rollback scenario 
-      - name: undo Build DB
+          flyway check -dryrun -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-reportEnabled=true" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" ${{ env.CUSTOM_PARAMS }}
+      # Step 2b - Create Check Report (Changes and Code Analysis)
+      - name: Flyway Check Report - Code Analysis
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info undo info -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" -baselineOnMigrate="true" -cleanDisabled='false' -target="${{ env.FIRST_UNDO_SCRIPT }}" ${{ env.CUSTOM_PARAMS }}
+          flyway check -changes -code -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
+      # Step 3 - Install Unit Tests via Flyway Prepare Deploy
+      - name: Flyway - Install Unit Tests
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway prepare deploy -environment="Build" -workingDirectory="${{ GITHUB.WORKSPACE }}\UnitTests" -prepare.source=schemaModel -prepare.target=Build -prepare.types=deploy -prepare.scriptFilename="${{ GITHUB.WORKSPACE }}\UnitTests\Artifact\D_${{ env.SCRIPT_FILENAME }}" -prepare.force=true -configFiles="${{ GITHUB.WORKSPACE }}\UnitTests\flyway.toml" -schemaModelLocation="${{ GITHUB.WORKSPACE }}\UnitTests\schema-model"
+      # Step 3a - Check Test Count
+      - name: Check Test Count
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
+          $result = Invoke-Sqlcmd -ServerInstance "localhost" -Database "${{ env.DATABASE_NAME }}" -Query $query
+          Write-Host "Found $($result.TestCount) tSQLt test(s)"
+          if ($result.TestCount -eq 0) {
+              Write-Host "::warning::No tests found!"
+          }
+      # Step 3b - Run tSQLt Tests
+      - name: Run tSQLt Tests
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          Invoke-Sqlcmd -ServerInstance "localhost" -Database "${{ env.DATABASE_NAME }}" -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+      # Step 3c - Publish Test Results as Artifact
+      - name: Publish Test Results
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsqlt-test-results-${{ github.run_number }}
+          path: ${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml
+      # Step 4 - Publish Check Report as Artifact
+      - name: Publish Check Report as Artifact
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: flyway-reports-build
+          path: ${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html
       # GitHub - After migration scripts are validated, publish them as an artifact
       - name: Publish Validated Migration Scripts as Artifact
         if: ${{ env.publishArtifacts == 'true' && success() }}
@@ -124,7 +165,7 @@ jobs:
               !${{ GITHUB.WORKSPACE }}\.git*\**\*
               ${{ GITHUB.WORKSPACE }}\**\schema-model\**\*
               ${{ GITHUB.WORKSPACE }}\**\migrations\**\*
-              ${{ GITHUB.WORKSPACE }}\**\Scripts\**\*
+              ${{ GITHUB.WORKSPACE }}\**\reports\**\*
               ${{ GITHUB.WORKSPACE }}\**\backups\**\*
               ${{ GITHUB.WORKSPACE }}\**\flyway.toml
               ${{ GITHUB.WORKSPACE }}\**\Filter.scpf
