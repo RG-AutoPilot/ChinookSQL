@@ -126,7 +126,7 @@ jobs:
         shell: pwsh
         run: |
           $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
-          $result = Invoke-Sqlcmd -ServerInstance "localhost" -Database "${{ env.DATABASE_NAME }}" -Query $query
+          $result = Invoke-Sqlcmd -ServerInstance "localhost:1433" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -Query $query
           Write-Host "Found $($result.TestCount) tSQLt test(s)"
           if ($result.TestCount -eq 0) {
               Write-Host "::warning::No tests found!"
