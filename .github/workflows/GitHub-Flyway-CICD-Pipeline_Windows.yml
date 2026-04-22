@@ -118,7 +118,7 @@ jobs:
       - name: Flyway - Install Unit Tests
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway prepare deploy -environment="Build" -workingDirectory="${{ GITHUB.WORKSPACE }}\UnitTests" -prepare.source=schemaModel -prepare.target=Build -prepare.types=deploy -prepare.scriptFilename="${{ GITHUB.WORKSPACE }}\UnitTests\Artifact\D_${{ env.SCRIPT_FILENAME }}" -prepare.force=true -configFiles="${{ GITHUB.WORKSPACE }}\UnitTests\flyway.toml" -schemaModelLocation="${{ GITHUB.WORKSPACE }}\UnitTests\schema-model"
+          flyway prepare deploy -environment="Build" -workingDirectory="${{ GITHUB.WORKSPACE }}\UnitTests" "-prepare.source=schemaModel" "-prepare.target=Build" "-prepare.types=deploy" "-prepare.scriptFilename=${{ GITHUB.WORKSPACE }}\UnitTests\Artifact\D_${{ env.SCRIPT_FILENAME }}" "-prepare.force=true" -configFiles="${{ GITHUB.WORKSPACE }}\UnitTests\flyway.toml" -schemaModelLocation="${{ GITHUB.WORKSPACE }}\UnitTests\schema-model"
       # Step 3a - Check Test Count
       - name: Check Test Count
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
