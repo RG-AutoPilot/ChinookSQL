@@ -14,7 +14,8 @@ CREATE TABLE [dbo].[Employee]
 [PostalCode] [nvarchar] (10) NULL,
 [Phone] [nvarchar] (24) NULL,
 [Fax] [nvarchar] (24) NULL,
-[Email] [nvarchar] (60) NULL
+[Email] [nvarchar] (60) NULL,
+[ManagerId] [int] NULL
 )
 GO
 ALTER TABLE [dbo].[Employee] ADD CONSTRAINT [PK_Employee] PRIMARY KEY CLUSTERED ([EmployeeId])
@@ -22,4 +23,6 @@ GO
 CREATE NONCLUSTERED INDEX [IFK_EmployeeReportsTo] ON [dbo].[Employee] ([ReportsTo])
 GO
 ALTER TABLE [dbo].[Employee] ADD CONSTRAINT [FK_EmployeeReportsTo] FOREIGN KEY ([ReportsTo]) REFERENCES [dbo].[Employee] ([EmployeeId])
+GO
+ALTER TABLE [dbo].[Employee] ADD CONSTRAINT [FK_EmployeeManagerId] FOREIGN KEY ([ManagerId]) REFERENCES [dbo].[Employee] ([EmployeeId])
 GO
