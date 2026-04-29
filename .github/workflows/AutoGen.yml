@@ -10,6 +10,9 @@ on:
 jobs:
   generate-migration:
     runs-on: huxLocal  # Or 'self-hosted' or 'ubuntu-latest' if preferred
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v4
