@@ -2,6 +2,7 @@ name: Auto-generate Flyway Migration Script
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'schema-model/**'
   # Allows you to run this workflow manually from the Actions tab
