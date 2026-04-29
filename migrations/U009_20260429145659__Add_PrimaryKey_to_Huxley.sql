@@ -1,0 +1,2 @@
+ALTER TABLE [dbo].[Huxley] DROP CONSTRAINT [PK_Huxley]
+GO
