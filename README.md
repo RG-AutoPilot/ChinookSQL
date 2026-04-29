@@ -1,5 +1,5 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+ChinookSQL is a database project for the Chinook sample database. It manages SQL migrations and schema changes using Flyway, with automated testing and CI/CD integration.
 
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
