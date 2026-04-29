@@ -17,12 +17,12 @@ jobs:
 
       # Set up Flyway CLI if not already on the runner
       # If your runner already has Flyway, skip this step
-      - name: Download and install Flyway CLI
-        run: |
-          curl -L -o flyway.zip https://download.red-gate.com/maven/release/org/flywaydb/flyway-commandline/10.20.0/flyway-commandline-10.20.0-windows-x64.zip
-          tar -xf flyway.zip
-          echo "${{ github.workspace }}\flyway-10.20.0" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        shell: pwsh
+      #- name: Download and install Flyway CLI
+      #  run: |
+      #    curl -L -o flyway.zip https://download.red-gate.com/maven/release/org/flywaydb/flyway-commandline/10.20.0/flyway-commandline-10.20.0-windows-x64.zip
+      #    tar -xf flyway.zip
+      #    echo "${{ github.workspace }}\flyway-10.20.0" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      #  shell: pwsh
 
       # Run your Flyway diff/generate command
       # --- Adapt these commands/params for your structure as needed
