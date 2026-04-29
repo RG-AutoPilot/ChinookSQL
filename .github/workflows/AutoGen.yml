@@ -1,9 +1,9 @@
 name: Auto-generate Flyway Migration Script
 
 on:
-#  pull_request:
-#    paths:
-#      - 'schema-model/**'
+  pull_request:
+    paths:
+      - 'schema-model/**'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -30,12 +30,16 @@ jobs:
       # --- Adapt these commands/params for your structure as needed
       - name: Generate Flyway migration script
         run: |
-          flyway diff `
-            "-diff.source=schema-model" `
-            "-diff.target=migrations" `
-            "-configFiles=flyway.toml"
-          flyway generate `
-            "-generate.location=migrations"
+            flyway generate `
+            "-generate.description=$(FLYWAY_VERSION_DESCRIPTION_SANITIZED)" `
+            "-generate.location=$(WORKING_DIRECTORY)\migrations" `
+            "-generate.types=versioned,undo" `
+            "-generate.artifactFilename=$(System.ArtifactsDirectory)\Artifacts\Flyway.$(DATABASE_NAME).differences-$(get-date -f yyyyMMdd).zip" `
+            "-generate.addTimestamp=true" `
+            -outputType="" `
+            -licenseKey="$(FLYWAY_LICENSE_KEY)" `
+            -configFiles="$(WORKING_DIRECTORY)\flyway.toml" `
+            -schemaModelLocation="$(WORKING_DIRECTORY)\schema-model\"
         shell: pwsh
 
       # Commit and push generated migration back to same PR branch
