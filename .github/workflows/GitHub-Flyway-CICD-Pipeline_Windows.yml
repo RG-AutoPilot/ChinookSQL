@@ -148,7 +148,7 @@ jobs:
           path: ${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml
       # Step 4 - Publish Check Report as Artifact
       - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
         with:
            files: UnitTests/TestResults/DatabaseTestResults.junit.xml
       - name: Publish Check Report as Artifact
