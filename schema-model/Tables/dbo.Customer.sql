@@ -12,7 +12,8 @@ CREATE TABLE [dbo].[Customer]
 [Phone] [nvarchar] (24) NULL,
 [Fax] [nvarchar] (24) NULL,
 [Email] [nvarchar] (60) NOT NULL,
-[SupportRepId] [int] NULL
+[SupportRepId] [int] NULL,
+[TestID] [int] NULL
 )
 GO
 ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED ([CustomerId])
