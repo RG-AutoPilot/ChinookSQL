@@ -30,16 +30,30 @@ jobs:
       # --- Adapt these commands/params for your structure as needed
       - name: Generate Flyway migration script
         run: |
-            flyway generate `
-            "-generate.description=$(FLYWAY_VERSION_DESCRIPTION_SANITIZED)" `
-            "-generate.location=$(WORKING_DIRECTORY)\migrations" `
+            $ARTIFACT_FILENAME = "${{ GITHUB.WORKSPACE }}\Flyway.Migrations.differences-$(get-date -f yyyyMMdd).zip"  # Output file for generated migrations
+            $WORKING_DIRECTORY = "${{ GITHUB.WORKSPACE }}"  # Path to Flyway project root
+            $SOURCE_ENVIRONMENT = "schemaModel"  # Source environment name (desired state)
+            $TARGET_ENVIRONMENT = "migrations"  # Target environment name (existing migrations)
+            $BUILD_ENVIRONMENT = "shadow"  # Build database environment name for validation
+            $BUILD_ENVIRONMENT_USERNAME = "Sa"  # Build database username (leave empty for flyway.toml)
+            $BUILD_ENVIRONMENT_PASSWORD = "Redgate1"  # Build database password (use env variables in production)
+            $FLYWAY_VERSION_DESCRIPTION = "FlywayCLI_AutomatedMigrationScript"  # Description for migration script filename
+            
+            # Calculate the differences between two entities (Databases/Folders & More) #
+            flyway diff generate `
+            "-diff.source=$SOURCE_ENVIRONMENT" `
+            "-diff.target=$TARGET_ENVIRONMENT" `
+            "-diff.buildEnvironment=$BUILD_ENVIRONMENT" `
+            "-environments.$BUILD_ENVIRONMENT.user=$BUILD_ENVIRONMENT_USERNAME" `
+            "-environments.$BUILD_ENVIRONMENT.password=$BUILD_ENVIRONMENT_PASSWORD" `
+            "-diff.artifactFilename=$ARTIFACT_FILENAME" `
+            "-generate.artifactFilename=$ARTIFACT_FILENAME" `
+            "-generate.description=$FLYWAY_VERSION_DESCRIPTION" `
+            "-generate.location=$WORKING_DIRECTORY\migrations" `
             "-generate.types=versioned,undo" `
-            "-generate.artifactFilename=$(System.ArtifactsDirectory)\Artifacts\Flyway.$(DATABASE_NAME).differences-$(get-date -f yyyyMMdd).zip" `
             "-generate.addTimestamp=true" `
-            -outputType="" `
-            -licenseKey="$(FLYWAY_LICENSE_KEY)" `
-            -configFiles="$(WORKING_DIRECTORY)\flyway.toml" `
-            -schemaModelLocation="$(WORKING_DIRECTORY)\schema-model\"
+            -workingDirectory="$WORKING_DIRECTORY" `
+            -schemaModelSchemas=""
         shell: pwsh
 
       # Commit and push generated migration back to same PR branch
