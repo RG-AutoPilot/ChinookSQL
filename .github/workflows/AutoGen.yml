@@ -61,7 +61,9 @@ jobs:
           flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
 
       # Step 2 - Generate migration script from schema model diff
+      # Only runs on pull requests - skipped for manual workflow_dispatch runs
       - name: Generate Flyway migration script
+        if: github.event_name == 'pull_request'
         run: |
             $ARTIFACT_FILENAME = "${{ GITHUB.WORKSPACE }}\Flyway.Migrations.differences-$(get-date -f yyyyMMdd).zip"  # Output file for generated migrations
             $WORKING_DIRECTORY = "${{ GITHUB.WORKSPACE }}"  # Path to Flyway project root
@@ -90,7 +92,9 @@ jobs:
         shell: pwsh
 
       # Step 2a - Commit and push generated migration back to the PR branch
+      # Only runs on pull requests - skipped for manual workflow_dispatch runs
       - name: Commit and push migration script back to PR branch
+        if: github.event_name == 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
