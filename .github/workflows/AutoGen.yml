@@ -1,0 +1,49 @@
+name: Auto-generate Flyway Migration Script
+
+on:
+  pull_request:
+    paths:
+      - 'schema-model/**'
+
+jobs:
+  generate-migration:
+    runs-on: windows-latest  # Or 'self-hosted' or 'ubuntu-latest' if preferred
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}  # For push access
+
+      # Set up Flyway CLI if not already on the runner
+      # If your runner already has Flyway, skip this step
+      - name: Download and install Flyway CLI
+        run: |
+          curl -L -o flyway.zip https://download.red-gate.com/maven/release/org/flywaydb/flyway-commandline/10.20.0/flyway-commandline-10.20.0-windows-x64.zip
+          tar -xf flyway.zip
+          echo "${{ github.workspace }}\flyway-10.20.0" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        shell: pwsh
+
+      # Run your Flyway diff/generate command
+      # --- Adapt these commands/params for your structure as needed
+      - name: Generate Flyway migration script
+        run: |
+          flyway diff `
+            "-diff.source=schema-model" `
+            "-diff.target=migrations" `
+            "-configFiles=flyway.toml"
+          flyway generate `
+            "-generate.location=migrations"
+        shell: pwsh
+
+      # Commit and push generated migration back to same PR branch
+      - name: Commit and push migration script back to PR branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .\migrations\*.sql
+          git commit -m "Auto-generated Flyway migration script for schema change [skip ci]" || echo "No changes to commit."
+          git push origin HEAD:${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
