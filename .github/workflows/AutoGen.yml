@@ -1,9 +1,9 @@
 name: Auto-generate Flyway Migration Script
 
 on:
-  pull_request:
-    paths:
-      - 'schema-model/**'
+#  pull_request:
+#    paths:
+#      - 'schema-model/**'
 
 jobs:
   generate-migration:
