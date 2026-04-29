@@ -147,7 +147,7 @@ jobs:
           name: tsqlt-test-results-${{ github.run_number }}
           path: ${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml
       # Step 4 - Publish Check Report as Artifact
-      - name: Publish test results
+      - name: Display Test Resultds
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
         with:
            files: ${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml
