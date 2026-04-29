@@ -9,7 +9,7 @@ on:
 
 jobs:
   generate-migration:
-    runs-on: windows-latest  # Or 'self-hosted' or 'ubuntu-latest' if preferred
+    runs-on: huxLocal  # Or 'self-hosted' or 'ubuntu-latest' if preferred
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v4
