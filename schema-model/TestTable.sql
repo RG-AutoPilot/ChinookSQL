@@ -1,0 +1,1 @@
+CREATE TABLE TestTable (TestID INT)
