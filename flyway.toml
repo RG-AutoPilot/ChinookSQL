@@ -148,3 +148,10 @@ provisioner = "clean"
 
 [environments.Dev]
 url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
+
+[environments.shadow]
+url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Shadow;encrypt=mandatory;trustServerCertificate=true"
+user = "sa"
+password = "${localSecret.Flyway Desktop 42792672-3382-43b5-8883-963a7118410f}"
+displayName = "Shadow database"
+provisioner = "clean"
