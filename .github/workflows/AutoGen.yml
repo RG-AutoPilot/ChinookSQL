@@ -54,12 +54,6 @@ jobs:
             exit 1
           }
 
-      # Step 1 - Flyway License Authentication
-      - name: Flyway Authentication
-        if: ${{ env.EXECUTE_BUILD == 'true' && env.FLYWAY_AUTH_DISABLED != 'true' && success() }}
-        run: |
-          flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
-
       # Step 2 - Generate migration script from schema model diff
       # Only runs on pull requests - skipped for manual workflow_dispatch runs
       - name: Generate Flyway migration script
