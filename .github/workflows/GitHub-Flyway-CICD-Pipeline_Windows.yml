@@ -97,11 +97,6 @@ jobs:
             echo "Error: Script not found at path $scriptPath"
             exit 1
           }
-      # Step 1 - Flyway License Authentication #
-      - name: Flyway Authentication
-        if: ${{ env.EXECUTE_BUILD == 'true' && env.FLYWAY_AUTH_DISABLED != 'true' && success() }}
-        run: |
-         flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
       # Step 2 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
       - name: Validate Migrate Scripts
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
