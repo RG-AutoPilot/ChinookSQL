@@ -1,9 +1,9 @@
 CREATE TABLE [dbo].[AlbumReview]
 (
-[ReviewId] [int] NOT NULL,
+[ReviewId] [int] IDENTITY(1,1) NOT NULL,
 [AlbumId] [int] NOT NULL,
 [CustomerId] [int] NOT NULL,
-[Rating] [int] NULL,
+[Rating] [int] NOT NULL,
 [ReviewText] [nvarchar] (1000) NULL,
 [ReviewDate] [datetime] NOT NULL CONSTRAINT [DF_AlbumReview_ReviewDate] DEFAULT (getdate())
 )
