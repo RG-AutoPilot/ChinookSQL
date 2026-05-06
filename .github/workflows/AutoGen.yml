@@ -103,7 +103,7 @@ jobs:
       - name: Validate Migrate Scripts
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" -provisionMode=reprovision ${{ env.CUSTOM_PARAMS }}
 
       # Step 3a - Create Check Report (Drift Detection - Using Deployed Snapshot)
       - name: Flyway Check Report - Dryrun
