@@ -1,6 +1,6 @@
 CREATE TABLE [dbo].[AlbumReview]
 (
-[ReviewId] [int] NOT NULL,
+[ReviewId] [int] NOT NULL IDENTITY(1, 1),
 [AlbumId] [int] NOT NULL,
 [CustomerId] [int] NOT NULL,
 [Rating] [int] NULL,
