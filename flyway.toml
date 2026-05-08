@@ -129,20 +129,20 @@ transportClrDataTypesAsBinary = false
   table = "AppConfig"
 
 [environments.Test]
-url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Test;encrypt=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Test;encrypt=true;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Test Database"
 
 [environments.Prod]
-url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Production Database"
 
 [environments.Check]
-url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Check;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Check Database"
 provisioner = "clean"
 
 [environments.Build]
-url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Build;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Build;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Build Database"
 provisioner = "clean"
 
@@ -150,8 +150,6 @@ provisioner = "clean"
 url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
 
 [environments.shadow]
-url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Shadow;encrypt=mandatory;trustServerCertificate=true"
-user = "sa"
-password = "${localSecret.Flyway Desktop 42792672-3382-43b5-8883-963a7118410f}"
+url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Shadow;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Shadow database"
 provisioner = "clean"
