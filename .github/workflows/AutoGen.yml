@@ -116,14 +116,14 @@ jobs:
       - name: Flyway Check Report - Code Analysis
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway check -changes -code -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.sarifFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Code-Analysis.sarif" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
+          flyway check -changes -code -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
 
       # Step 3c - Upload SARIF code analysis results to GitHub Code Scanning
       - name: Upload SARIF to GitHub Code Scanning
         if: ${{ env.EXECUTE_BUILD == 'true' && always() }}
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ github.workspace }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ github.run_id }}-Code-Analysis.sarif
+          sarif_file: ${{ github.workspace }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ github.run_id }}-Check-Report-code-review.sarif
           category: flyway-code-analysis
 
       # Step 4 - Install Unit Tests via Flyway Prepare Deploy
