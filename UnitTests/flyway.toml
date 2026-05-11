@@ -119,5 +119,5 @@ skipIntegrityChecksForForeignKeys = false
 transportClrDataTypesAsBinary = false
 
 [environments.Build]
-url = "jdbc:sqlserver://localhost:1433;authentication=sqlPassword;databaseName=Chinook_Build;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Build;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Build Database"
