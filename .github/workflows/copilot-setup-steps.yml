@@ -29,7 +29,7 @@ jobs:
       # then writes the install path to GITHUB_PATH so it's available for the agent.
       - name: Install Flyway CLI
         run: |
-          chmod +x ./scripts/Flyway_DownloadAndInstallCLI.sh
+          chmod +x ./Scripts/Flyway_DownloadAndInstallCLI.sh
           ./scripts/Flyway_DownloadAndInstallCLI.sh
 
       # Step 3 - Pull the SQL Server 2019 image before starting the container.
