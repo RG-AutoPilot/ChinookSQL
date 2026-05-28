@@ -1,0 +1,80 @@
+name: "Copilot Setup Steps"
+
+# Runs automatically when this file changes, and can be triggered manually
+# from the Actions tab to verify the setup works as expected.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # Job name must be exactly 'copilot-setup-steps' - GitHub uses this to identify the file.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      # Step 1 - Check out the repository so the Flyway install script is available.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2 - Install Flyway CLI using Chris's install script.
+      # The script detects it's running in CI and installs to $HOME/.flyway,
+      # then writes the install path to GITHUB_PATH so it's available for the agent.
+      - name: Install Flyway CLI
+        run: |
+          chmod +x ./scripts/Flyway_DownloadAndInstallCLI.sh
+          ./scripts/Flyway_DownloadAndInstallCLI.sh
+
+      # Step 3 - Pull the SQL Server 2019 image before starting the container.
+      # Doing this separately makes it easier to spot download failures in the logs.
+      - name: Pull SQL Server 2019 Docker image
+        run: docker pull mcr.microsoft.com/mssql/server:2019-latest
+
+      # Step 4 - Start SQL Server container.
+      # SA_PASSWORD must meet SQL Server complexity requirements (upper, lower, digit, special).
+      # NOTE: Password is hardcoded here for POC purposes only.
+      #       Move to a repository secret before any wider use.
+      - name: Start SQL Server container
+        run: |
+          docker run \
+            --name sqlserver_agent \
+            -e ACCEPT_EULA=Y \
+            -e SA_PASSWORD=Redgate1! \
+            -p 1433:1433 \
+            -d mcr.microsoft.com/mssql/server:2019-latest
+
+      # Step 5 - Wait for SQL Server to finish starting before trying to create the database.
+      # Checks every 5 seconds for up to 2.5 minutes (30 attempts).
+      - name: Wait for SQL Server to be ready
+        run: |
+          echo "Waiting for SQL Server to start..."
+          for i in {1..30}; do
+            if docker exec sqlserver_agent /opt/mssql-tools/bin/sqlcmd \
+              -S localhost -U sa -P "Redgate1!" \
+              -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "SQL Server is ready after attempt $i."
+              break
+            fi
+            echo "Attempt $i: not ready yet, retrying in 5 seconds..."
+            sleep 5
+            if [ "$i" -eq 30 ]; then
+              echo "SQL Server did not become ready in time. Exiting."
+              exit 1
+            fi
+          done
+
+      # Step 6 - Create the AutoPilotShadow database.
+      # Flyway will use this as the build environment when generating migration scripts.
+      - name: Create AutoPilotShadow database
+        run: |
+          docker exec sqlserver_agent /opt/mssql-tools/bin/sqlcmd \
+            -S localhost -U sa -P "Redgate1!" \
+            -Q "CREATE DATABASE AutoPilotShadow"
+          echo "AutoPilotShadow database created."
