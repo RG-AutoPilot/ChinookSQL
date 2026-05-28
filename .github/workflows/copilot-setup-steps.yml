@@ -30,7 +30,7 @@ jobs:
       - name: Install Flyway CLI
         run: |
           chmod +x ./Scripts/Flyway_DownloadAndInstallCLI.sh
-          ./scripts/Flyway_DownloadAndInstallCLI.sh
+          ./Scripts/Flyway_DownloadAndInstallCLI.sh
 
       # Step 3 - Pull the SQL Server 2019 image before starting the container.
       # Doing this separately makes it easier to spot download failures in the logs.
