@@ -66,7 +66,9 @@ flyway diff generate \
   "-generate.types=versioned,undo" \
   "-generate.addTimestamp=true" \
   "-workingDirectory=$WORKING_DIR" \
-  "-schemaModelSchemas="
+  "-schemaModelSchemas=" \
+  "-email="Huxley.Kendell@Red-Gate.com" \
+  "-token="2-TbZsX65qs_sQJyd4W4Y7LU_Q4lfOJPyqwlJW4hUU0ZN7unMl6uiyuxvS_zq_6HaItN6sg6C0ZWRM_SgQgBHdKw"
 ```
 
 If this command fails, stop and report the full error output. Do not attempt to manually create or edit migration files.
