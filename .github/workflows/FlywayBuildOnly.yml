@@ -1,0 +1,154 @@
+name: Auto-generate Flyway Migration Script
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'schema-model/**'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  generate-and-build:
+    runs-on: huxLocal
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+      security-events: write
+      actions: read 
+    name: Deploy Build
+    environment: 'build'
+    env:
+      stage: 'Build'
+      displayName: 'Build'
+      DATABASE_NAME: 'Chinook_Build'
+      ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file.
+      TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
+      TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
+      REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME }}"
+      REPORT_DATABASE_PASSWORD: "${{ secrets.REPORT_DATABASE_PASSWORD }}"
+      CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
+      EXECUTE_BUILD: 'true' # Turn to false to skip the build stage tasks
+      publishArtifacts: 'true' # Turn to false to skip the artifact upload
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Optional - If Enabled, Flyway CLI will be validated and installed if not present
+      - name: Flyway - CLI Install Manual Validation
+        if: env.FLYWAY_CLI_INSTALL_CHECK == 'true'
+        run: |
+          $scriptPath = "${{ GITHUB.WORKSPACE }}/scripts/Flyway_DownloadAndInstallCLI.ps1"
+          if (Test-Path $scriptPath) {
+            echo "Script found. Running Flyway_DownloadAndInstallCLI.ps1..."
+            & $scriptPath
+            echo "Updating PATH environment variable to include Flyway CLI Path"
+              echo "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          } 
+          else {
+            echo "Error: Script not found at path $scriptPath"
+            exit 1
+          }
+
+      # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database
+      - name: Validate Migrate Scripts
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" -provisionMode=reprovision ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="2-TbZsX65qs_sQJyd4W4Y7LU_Q4lfOJPyqwlJW4hUU0ZN7unMl6uiyuxvS_zq_6HaItN6sg6C0ZWRM_SgQgBHdKw"
+
+      # Step 3a - Create Check Report (Drift Detection - Using Deployed Snapshot)
+      - name: Flyway Check Report - Dryrun
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway check -dryrun -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-reportEnabled=true" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" ${{ env.CUSTOM_PARAMS }}
+
+      # Step 3b - Create Check Report (Changes and Code Analysis)
+      - name: Flyway Check Report - Code Analysis
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway check -changes -code -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
+
+      # Step 3c - Upload SARIF code analysis results to GitHub Code Scanning
+      - name: Upload SARIF to GitHub Code Scanning
+        if: ${{ env.EXECUTE_BUILD == 'true' && always() }}
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ github.workspace }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ github.run_id }}-Check-Report-code-review.sarif
+          category: flyway-code-analysis
+
+      # Step 4 - Install Unit Tests via Flyway Prepare Deploy
+      - name: Flyway - Install Unit Tests
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway prepare deploy -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -workingDirectory="${{ GITHUB.WORKSPACE }}\UnitTests" "-prepare.source=schemaModel" "-prepare.target=Build" "-prepare.types=deploy" "-prepare.scriptFilename=${{ GITHUB.WORKSPACE }}\UnitTests\Artifact\D_${{ env.SCRIPT_FILENAME }}" "-prepare.force=true" -configFiles="${{ GITHUB.WORKSPACE }}\UnitTests\flyway.toml" -schemaModelLocation="${{ GITHUB.WORKSPACE }}\UnitTests\schema-model"
+
+      # Step 4a - Check Test Count
+      - name: Check Test Count
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
+          $result = Invoke-Sqlcmd -ServerInstance "localhost\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query $query
+          Write-Host "Found $($result.TestCount) tSQLt test(s)"
+          if ($result.TestCount -eq 0) {
+              Write-Host "::warning::No tests found!"
+          }
+
+      # Step 4b - Run tSQLt Tests
+      - name: Run tSQLt Tests
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          Invoke-Sqlcmd -ServerInstance "localhost\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+
+      # Step 4c - Publish Test Results as Artifact
+      - name: Publish Test Results as Artifact
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsqlt-test-results-${{ github.run_number }}
+          path: ${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml
+
+      # Step 4d - Publish Test Results to GitHub Checks
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: tSQLt Test Results
+          path: UnitTests/TestResults/DatabaseTestResults.junit.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      # Step 5 - Publish Check Report as Artifact
+      - name: Publish Check Report as Artifact
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: flyway-reports-build
+          path: ${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html
+
+      # Step 6 - After migration scripts are validated, publish them as an artifact
+      - name: Publish Validated Migration Scripts as Artifact
+        if: ${{ env.publishArtifacts == 'true' && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: flyway-build-artifact-${{ github.run_number }}
+          path: |
+              !${{ GITHUB.WORKSPACE }}\flyway-*\**\*
+              !${{ GITHUB.WORKSPACE }}\.git\**\*
+              !${{ GITHUB.WORKSPACE }}\.git*\**\*
+              ${{ GITHUB.WORKSPACE }}\**\schema-model\**\*
+              ${{ GITHUB.WORKSPACE }}\**\migrations\**\*
+              ${{ GITHUB.WORKSPACE }}\**\reports\**\*
+              ${{ GITHUB.WORKSPACE }}\**\backups\**\*
+              ${{ GITHUB.WORKSPACE }}\**\flyway.toml
+              ${{ GITHUB.WORKSPACE }}\**\Filter.scpf
