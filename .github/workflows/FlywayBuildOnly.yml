@@ -1,4 +1,4 @@
-name: Auto-generate Flyway Migration Script
+name: Flyway Build Pipeline
 
 on:
   pull_request:
