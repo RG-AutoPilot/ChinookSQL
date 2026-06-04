@@ -12,7 +12,7 @@ You are allowed to:
 - Run Flyway CLI commands
 - Create a new branch and open a pull request
 
-## - NEVER Write a V / U / B Migration Script yourself, only ever use the Flyway CLI to translate edited schema model files into a Flyway migration script. 
+## NEVER Write a V / U / B Migration Script yourself, only ever use the Flyway CLI to translate edited schema model files into a Flyway migration script. 
 
 You must never:
 - Modify anything inside `migrations/`
