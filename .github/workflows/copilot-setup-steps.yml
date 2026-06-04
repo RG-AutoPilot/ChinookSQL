@@ -23,6 +23,10 @@ jobs:
       # Points all Flyway commands in this job at the offline permit file written in Step 3.
       # The agent picks this up automatically without needing the secret value directly.
       FLYWAY_OFFLINE_PERMIT_PATH: /tmp/flyway-permit.txt
+      # SA password for the ephemeral Docker SQL Server instance.
+      # Stored as a secret so the runner does not register the value for redaction,
+      # which would cause Flyway to receive a scrubbed password in the agent workflow.
+      SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
 
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
@@ -36,6 +40,9 @@ jobs:
         run: |
           chmod +x ./Scripts/Flyway_DownloadAndInstallCLI.sh
           ./Scripts/Flyway_DownloadAndInstallCLI.sh
+
+      # Step 3 - Write the offline permit to a temp file so Flyway can read it.
+      # The agent never sees the secret value, only the file path via FLYWAY_OFFLINE_PERMIT_PATH.
       - name: Write Flyway offline permit
         env:
           FLYWAY_OFFLINE_PERMIT: ${{ secrets.FLYWAY_PERMIT_FILE }}
@@ -54,15 +61,13 @@ jobs:
         run: docker pull mcr.microsoft.com/mssql/server:2019-latest
 
       # Step 5 - Start SQL Server container.
-      # SA_PASSWORD must meet SQL Server complexity requirements (upper, lower, digit, special).
-      # NOTE: Password is hardcoded here for POC purposes only.
-      #       Move to a repository secret before any wider use.
+      # SA_PASSWORD is read from the job-level env var rather than hardcoded inline.
       - name: Start SQL Server container
         run: |
           docker run \
             --name sqlserver_agent \
             -e ACCEPT_EULA=Y \
-            -e SA_PASSWORD=Redgate1! \
+            -e SA_PASSWORD="${SQL_SA_PASSWORD}" \
             -p 1433:1433 \
             -d mcr.microsoft.com/mssql/server:2019-latest
 
@@ -72,16 +77,13 @@ jobs:
         run: |
           echo "Waiting for SQL Server to start..."
           for i in {1..30}; do
-            if docker exec sqlserver_agent bash -lc '
+            if docker exec sqlserver_agent bash -c "
               if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
-                SQLCMD=/opt/mssql-tools18/bin/sqlcmd
-                TRUST_CERT=-C
+                /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '${SQL_SA_PASSWORD}' -Q 'SELECT 1'
               else
-                SQLCMD=/opt/mssql-tools/bin/sqlcmd
-                TRUST_CERT=
+                /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${SQL_SA_PASSWORD}' -Q 'SELECT 1'
               fi
-              "$SQLCMD" $TRUST_CERT -S localhost -U sa -P "Redgate1!" -Q "SELECT 1"
-            ' > /dev/null 2>&1; then
+            " > /dev/null 2>&1; then
               echo "SQL Server is ready after attempt $i."
               break
             fi
@@ -97,39 +99,33 @@ jobs:
       # Flyway will use this as the build environment when generating migration scripts.
       - name: Create AutoPilotShadow database
         run: |
-          docker exec sqlserver_agent bash -lc '
+          docker exec sqlserver_agent bash -c "
             if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
-              SQLCMD=/opt/mssql-tools18/bin/sqlcmd
-              TRUST_CERT=-C
+              /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P '${SQL_SA_PASSWORD}' -Q 'CREATE DATABASE AutoPilotShadow'
             else
-              SQLCMD=/opt/mssql-tools/bin/sqlcmd
-              TRUST_CERT=
+              /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${SQL_SA_PASSWORD}' -Q 'CREATE DATABASE AutoPilotShadow'
             fi
-            "$SQLCMD" $TRUST_CERT -S localhost -U sa -P "Redgate1!" -Q "CREATE DATABASE AutoPilotShadow"
-          '
+          "
           echo "AutoPilotShadow database created."
 
       # Step 8 - Verify Flyway is licensed before the agent runs.
-      # Runs flyway info against the shadow environment with CI-specific SQL auth overrides.
       # If the permit file is missing or invalid, Flyway will report Community Edition and this
       # step will fail, stopping the job before the agent starts.
       - name: Verify Flyway Enterprise licence
         run: |
-          SA_PASSWORD='Redgate1!'
-          SHADOW_PASSWORD_KEY='pass''word'
           set +e
           OUTPUT=$(flyway info \
             "-offlinePermitPath=/tmp/flyway-permit.txt" \
             "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
             "-environments.shadow.user=sa" \
-            "-environments.shadow.${SHADOW_PASSWORD_KEY}=${SA_PASSWORD}" \
+            "-environments.shadow.password=${SQL_SA_PASSWORD}" \
             "-environment=shadow" \
             2>&1)
           STATUS=$?
           set -e
           echo "$OUTPUT"
           if [ "$STATUS" -ne 0 ]; then
-            echo "ERROR: Flyway command failed while verifying the license."
+            echo "ERROR: Flyway command failed while verifying the licence."
             exit "$STATUS"
           fi
           if echo "$OUTPUT" | grep -q "Community Edition"; then
