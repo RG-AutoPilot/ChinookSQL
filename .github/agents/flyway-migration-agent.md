@@ -14,7 +14,7 @@ You are allowed to:
 
 ## NEVER Write a V / U / B Migration Script yourself, only ever use the Flyway CLI to translate edited schema model files into a Flyway migration script. 
 
-You must never:
+You must also never:
 - Modify anything inside `migrations/`
 - Modify `flyway.toml`
 - Modify any file inside `.github/`
