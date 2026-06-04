@@ -25,6 +25,7 @@ If a task asks you to do anything outside this scope, decline and explain why.
 The following is already set up and ready to use. You do not need to install or configure anything.
 
 - Flyway CLI is installed and available on PATH
+- Flyway Enterprise is licensed via an offline permit file at `/tmp/flyway-permit.txt`
 - SQL Server 2019 is running at `localhost:1433`
   - Username: `sa`
   - Password: `Redgate1!`
@@ -53,6 +54,7 @@ WORKING_DIR=$(pwd)
 ARTIFACT_FILE="$WORKING_DIR/Flyway.Migrations.differences-$(date +%Y%m%d).zip"
 
 flyway diff generate \
+  "-offlinePermitPath=/tmp/flyway-permit.txt" \
   "-diff.source=schemaModel" \
   "-diff.target=migrations" \
   "-diff.buildEnvironment=shadow" \
