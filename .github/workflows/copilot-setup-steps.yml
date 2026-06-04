@@ -22,7 +22,7 @@ jobs:
     env:
       # Points all Flyway commands in this job at the offline permit file written in Step 3.
       # The agent picks this up automatically without needing the secret value directly.
-      FLYWAY_OFFLINE_PERMIT_PATH: ${{ runner.temp }}/flyway-permit.txt
+      FLYWAY_OFFLINE_PERMIT_PATH: /tmp/flyway-permit.txt
 
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
@@ -43,7 +43,7 @@ jobs:
       - name: Write Flyway offline permit
         env:
           FLYWAY_OFFLINE_PERMIT: ${{ secrets.FLYWAY_OFFLINE_PERMIT }}
-        run: echo "$FLYWAY_OFFLINE_PERMIT" > "${{ runner.temp }}/flyway-permit.txt"
+        run: echo "$FLYWAY_OFFLINE_PERMIT" > "/tmp/flyway-permit.txt"
 
       # Step 4 - Pull the SQL Server 2019 image before starting the container.
       # Doing this separately makes it easier to spot download failures in the logs.
