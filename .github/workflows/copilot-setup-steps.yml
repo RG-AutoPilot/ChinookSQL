@@ -26,7 +26,7 @@ jobs:
       # SA password for the ephemeral Docker SQL Server instance.
       # Stored as a secret so the runner does not register the value for redaction,
       # which would cause Flyway to receive a scrubbed password in the agent workflow.
-      SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
+      
 
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
@@ -63,6 +63,8 @@ jobs:
       # Step 5 - Start SQL Server container.
       # SA_PASSWORD is read from the job-level env var rather than hardcoded inline.
       - name: Start SQL Server container
+        env:
+          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           docker run \
             --name sqlserver_agent \
