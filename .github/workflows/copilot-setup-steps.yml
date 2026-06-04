@@ -105,3 +105,20 @@ jobs:
             "$SQLCMD" $TRUST_CERT -S localhost -U sa -P "Redgate1!" -Q "CREATE DATABASE AutoPilotShadow"
           '
           echo "AutoPilotShadow database created."
+
+      # Step 8 - Verify Flyway is licensed before the agent runs.
+      # Runs flyway info against the shadow environment using flyway.toml for connection details.
+      # If the permit file is missing or invalid, Flyway will report Community Edition and this
+      # step will fail, stopping the job before the agent starts.
+      - name: Verify Flyway Enterprise licence
+        run: |
+          OUTPUT=$(flyway info \
+            "-offlinePermitPath=/tmp/flyway-permit.txt" \
+            "-environment=shadow" \
+            2>&1)
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "Community Edition"; then
+            echo "ERROR: Flyway is running as Community Edition. Permit file was not read correctly."
+            exit 1
+          fi
+          echo "Flyway Enterprise licence confirmed."
