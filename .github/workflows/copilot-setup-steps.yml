@@ -38,7 +38,7 @@ jobs:
           ./Scripts/Flyway_DownloadAndInstallCLI.sh
       - name: Write Flyway offline permit
         env:
-          FLYWAY_OFFLINE_PERMIT: ${{ secrets.FLYWAY_OFFLINE_PERMIT }}
+          FLYWAY_OFFLINE_PERMIT: ${{ secrets.FLYWAY_PERMIT_FILE }}
         run: |
           if [ -z "$FLYWAY_OFFLINE_PERMIT" ]; then
             echo "ERROR: FLYWAY_OFFLINE_PERMIT secret is not available in this workflow context."
