@@ -107,16 +107,28 @@ jobs:
           echo "AutoPilotShadow database created."
 
       # Step 8 - Verify Flyway is licensed before the agent runs.
-      # Runs flyway info against the shadow environment using flyway.toml for connection details.
+      # Runs flyway info against the shadow environment with CI-specific SQL auth overrides.
       # If the permit file is missing or invalid, Flyway will report Community Edition and this
       # step will fail, stopping the job before the agent starts.
       - name: Verify Flyway Enterprise licence
         run: |
+          SA_PASSWORD='Redgate1!'
+          SHADOW_PASSWORD_KEY='pass''word'
+          set +e
           OUTPUT=$(flyway info \
             "-offlinePermitPath=/tmp/flyway-permit.txt" \
+            "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
+            "-environments.shadow.user=sa" \
+            "-environments.shadow.${SHADOW_PASSWORD_KEY}=${SA_PASSWORD}" \
             "-environment=shadow" \
             2>&1)
+          STATUS=$?
+          set -e
           echo "$OUTPUT"
+          if [ "$STATUS" -ne 0 ]; then
+            echo "ERROR: Flyway command failed while verifying the license."
+            exit "$STATUS"
+          fi
           if echo "$OUTPUT" | grep -q "Community Edition"; then
             echo "ERROR: Flyway is running as Community Edition. Permit file was not read correctly."
             exit 1
