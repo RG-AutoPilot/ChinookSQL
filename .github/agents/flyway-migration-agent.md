@@ -17,6 +17,7 @@ You must never:
 - Modify `flyway.toml`
 - Modify any file inside `.github/`
 - Modify any other file outside `schema-model/`
+- Write a V / U / B Migration Script yourself, only ever use the Flyway CLI. 
 
 If a task asks you to do anything outside this scope, decline and explain why.
 
