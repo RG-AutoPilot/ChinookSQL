@@ -19,6 +19,11 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      # Points all Flyway commands in this job at the offline permit file written in Step 3.
+      # The agent picks this up automatically without needing the secret value directly.
+      FLYWAY_OFFLINE_PERMIT_PATH: ${{ runner.temp }}/flyway-permit.txt
+
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
       - name: Checkout repository
@@ -32,14 +37,13 @@ jobs:
           chmod +x ./Scripts/Flyway_DownloadAndInstallCLI.sh
           ./Scripts/Flyway_DownloadAndInstallCLI.sh
 
-      # Step 3 - Authenticate Flyway CLI using a Personal Access Token stored as a repository secret.
-      # This writes a license permit to the runner's app data folder so all subsequent Flyway
-      # commands are licensed. The agent never sees these values.
-      - name: Authenticate Flyway CLI
+      # Step 3 - Write the offline permit to a temp file so Flyway can read it.
+      # RUNNER_TEMP is cleaned up by GitHub before each job starts, so the file won't persist.
+      # The agent never sees the secret value, only the file path via FLYWAY_OFFLINE_PERMIT_PATH.
+      - name: Write Flyway offline permit
         env:
-          FLYWAY_EMAIL: ${{ secrets.FLYWAY_EMAIL }}
-          FLYWAY_TOKEN: ${{ secrets.FLYWAY_TOKEN }}
-        run: flyway info -email="$FLYWAY_EMAIL" -token="$FLYWAY_TOKEN" -url="jdbc:h2:mem:dummy" 2>/dev/null || true
+          FLYWAY_OFFLINE_PERMIT: ${{ secrets.FLYWAY_OFFLINE_PERMIT }}
+        run: echo "$FLYWAY_OFFLINE_PERMIT" > "${{ runner.temp }}/flyway-permit.txt"
 
       # Step 4 - Pull the SQL Server 2019 image before starting the container.
       # Doing this separately makes it easier to spot download failures in the logs.
