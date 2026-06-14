@@ -23,3 +23,7 @@ CREATE NONCLUSTERED INDEX [IFK_CustomerSupportRepId] ON [dbo].[Customer] ([Suppo
 GO
 ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [FK_CustomerSupportRepId] FOREIGN KEY ([SupportRepId]) REFERENCES [dbo].[Employee] ([EmployeeId])
 GO
+CREATE NONCLUSTERED INDEX [IFK_CustomerTestID] ON [dbo].[Customer] ([TestID])
+GO
+ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [FK_CustomerTestID] FOREIGN KEY ([TestID]) REFERENCES [dbo].[Employee] ([EmployeeId])
+GO
