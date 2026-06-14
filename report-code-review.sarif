@@ -5,16 +5,165 @@
     "tool" : {
       "driver" : {
         "name" : "Redgate Flyway Code Review",
-        "version" : "12.5.0-rc1852",
-        "informationUri" : "https://help.red-gate.com/help/flyway-cli12/help_5.aspx?topic=check-code",
-        "rules" : [ ]
+        "version" : "12.6.2-rc2042",
+        "informationUri" : "https://help.red-gate.com/help/flyway-cli12/help_6.aspx?topic=check-code",
+        "rules" : [ {
+          "id" : "DM004",
+          "shortDescription" : {
+            "text" : "DROP TABLE must include an existence check (IF EXISTS) to ensure idempotency"
+          },
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli12/help_6.aspx?topic=rules/DM004"
+        }, {
+          "id" : "HK001",
+          "shortDescription" : {
+            "text" : "Object name not permitted by naming standards - Stop naming objects after yourself!"
+          },
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli12/help_6.aspx?topic=rules/HK001"
+        }, {
+          "id" : "RG01",
+          "shortDescription" : {
+            "text" : "Usage of DROP TABLE is discouraged."
+          },
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli12/help_6.aspx?topic=rules/RG01"
+        }, {
+          "id" : "DM001",
+          "shortDescription" : {
+            "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
+          },
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli12/help_6.aspx?topic=rules/DM001"
+        }, {
+          "id" : "AM04",
+          "shortDescription" : {
+            "text" : "Query produces an unknown number of result columns."
+          },
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli12/help_6.aspx?topic=rules/AM04"
+        } ]
       }
     },
-    "results" : [ ],
+    "results" : [ {
+      "ruleId" : "DM004",
+      "level" : "error",
+      "message" : {
+        "text" : "DROP TABLE must include an existence check (IF EXISTS) to ensure idempotency"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "migrations/V011_20260508160127__Drop_ArtistBio_table_and_create_HuxleyTest_table.sql",
+            "uriBaseId" : "%SRCROOT%"
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 4,
+            "endLine" : 14,
+            "endColumn" : 4
+          }
+        }
+      } ]
+    }, {
+      "ruleId" : "HK001",
+      "level" : "error",
+      "message" : {
+        "text" : "Object name not permitted by naming standards - Stop naming objects after yourself!"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "migrations/V011_20260508160127__Drop_ArtistBio_table_and_create_HuxleyTest_table.sql",
+            "uriBaseId" : "%SRCROOT%"
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 25,
+            "endLine" : 17,
+            "endColumn" : 25
+          }
+        }
+      } ]
+    }, {
+      "ruleId" : "HK001",
+      "level" : "error",
+      "message" : {
+        "text" : "Object name not permitted by naming standards - Stop naming objects after yourself!"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "migrations/V011_20260508160127__Drop_ArtistBio_table_and_create_HuxleyTest_table.sql",
+            "uriBaseId" : "%SRCROOT%"
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 21,
+            "endLine" : 19,
+            "endColumn" : 21
+          }
+        }
+      } ]
+    }, {
+      "ruleId" : "RG01",
+      "level" : "error",
+      "message" : {
+        "text" : "Usage of DROP TABLE is discouraged."
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "migrations/V011_20260508160127__Drop_ArtistBio_table_and_create_HuxleyTest_table.sql",
+            "uriBaseId" : "%SRCROOT%"
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 1,
+            "endLine" : 15,
+            "endColumn" : 29
+          }
+        }
+      } ]
+    }, {
+      "ruleId" : "DM001",
+      "level" : "error",
+      "message" : {
+        "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "migrations/V013_20260610143256__Add_HuxDemo_column_to_Customer_table,_create_AddressBook_table_and_getAddress_procedure.sql",
+            "uriBaseId" : "%SRCROOT%"
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 5,
+            "endLine" : 27,
+            "endColumn" : 5
+          }
+        }
+      } ]
+    }, {
+      "ruleId" : "AM04",
+      "level" : "error",
+      "message" : {
+        "text" : "Query produces an unknown number of result columns."
+      },
+      "locations" : [ {
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "migrations/V013_20260610143256__Add_HuxDemo_column_to_Customer_table,_create_AddressBook_table_and_getAddress_procedure.sql",
+            "uriBaseId" : "%SRCROOT%"
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 5,
+            "endLine" : 27,
+            "endColumn" : 34
+          }
+        }
+      } ]
+    } ],
     "originalUriBaseIds" : {
       "%SRCROOT%" : {
-        "uri" : "file:///C:/Users/Huxley.Kendell/OneDrive%20-%20Redgate/Desktop/Autopilot/ChinookSQL/",
-        "uriBaseId" : null
+        "uri" : "file:///C:/Users/Huxley.Kendell/OneDrive%20-%20Redgate/Desktop/Autopilot/ChinookSQL/"
       }
     }
   } ]
