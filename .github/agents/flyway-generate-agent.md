@@ -79,19 +79,6 @@ If this command fails, stop and report the full error output. Do not attempt to 
 
 Check that at least one new `.sql` file now exists in `migrations/`. If no file was created, report the error and stop. Do not continue to step 5.
 
-### Step 5: Create a pull request
+### Step 5: Wait for Pull Request
 
-Create a new branch using the following naming convention:
-- If you were assigned from a GitHub issue: `AIworkflowBranch-{issue-number}`
-- If no issue number is available: `AIworkflowBranch-{timestamp}` where timestamp is `YYYYMMDDHHMMSS`
-
-Commit all changes with the message:
-```
-AI-generated migration script [skip ci]
-
-Closes #{issue-number}
-```
-
-Open a pull request with:
-- Base branch: `main`
-- Body: a short description of what schema changes were made and which issue this addresses
+Do not skip CI, do not open the PR yourself. Allow a human to create the PR once you are done, to make sure CI is triggered and Build.
