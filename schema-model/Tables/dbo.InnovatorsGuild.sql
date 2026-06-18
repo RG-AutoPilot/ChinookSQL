@@ -9,6 +9,7 @@ CREATE TABLE [dbo].[InnovatorsGuild]
 [SessionDate] [datetime] NOT NULL,
 [EnjoymentRating] [tinyint] NOT NULL,
 [Comments] [nvarchar] (500) NULL,
+[WasThisHelpful] [bit] NULL,
 [RegisteredAt] [datetime] NOT NULL CONSTRAINT [DF_InnovatorsGuild_RegisteredAt] DEFAULT (getdate())
 )
 GO
