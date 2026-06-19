@@ -8,6 +8,6 @@ CREATE PROCEDURE [dbo].[getAddress]
 -- WITH ENCRYPTION, RECOMPILE, EXECUTE AS CALLER|SELF|OWNER| 'user_name'
 AS
 BEGIN
-    SELECT * FROM dbo.AddressBook
+    SELECT [AddressBookId], [FirstName], [LastName], [Age] FROM dbo.AddressBook WHERE [AddressBookId] = @parameter_name
 END
 GO
