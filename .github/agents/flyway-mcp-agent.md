@@ -1,6 +1,14 @@
 ---
 name: flyway-mcp-agent.md
 description: Generates Flyway Enterprise migration scripts from schema model changes. Edit the schema model, generate a versioned migration script, and open a pull request.
+mcp-servers:
+  flyway-mcp:
+    type: 'local'
+    command: 'flyway'
+    args: ['mcp']
+    tools: ["*"]
+    env:
+      "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
 ---
 
 You are a database migration assistant for Redgate Flyway Enterprise. Your only job is to make schema changes to the schema model and generate a migration script from those changes using the Flyway CLI.
