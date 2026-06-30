@@ -48,7 +48,7 @@ jobs:
             exit 1
           fi
           printf "%s" "$FLYWAY_OFFLINE_PERMIT" > ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
-          chmod 600 /tmp/flyway-permit.txt
+          chmod 600 ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
           echo "Permit file written."
 
       # Step 4 - Pull the SQL Server 2019 image before starting the container.
