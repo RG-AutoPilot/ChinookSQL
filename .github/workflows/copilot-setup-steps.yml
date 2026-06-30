@@ -22,7 +22,7 @@ jobs:
     env:
       # Points all Flyway commands in this job at the offline permit file written in Step 3.
       # The agent picks this up automatically without needing the secret value directly.
-      FLYWAY_OFFLINE_PERMIT_PATH: ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
+      FLYWAY_OFFLINE_PERMIT_PATH: $HOME/.flyway/permit.txt
 
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
@@ -47,8 +47,8 @@ jobs:
             echo "ERROR: FLYWAY_OFFLINE_PERMIT secret is not available in this workflow context."
             exit 1
           fi
-          printf "%s" "$FLYWAY_OFFLINE_PERMIT" > ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
-          chmod 600 ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
+          printf "%s" "$FLYWAY_OFFLINE_PERMIT" > "$HOME/.flyway/permit.txt"
+          chmod 600 "$HOME/.flyway/permit.txt"
           echo "Permit file written."
 
       # Step 4 - Pull the SQL Server 2019 image before starting the container.
@@ -122,7 +122,7 @@ jobs:
         run: |
           set +e
           OUTPUT=$(flyway info \
-            "-offlinePermitPath=${{ GITHUB.WORKSPACE }}/flyway-permit.txt" \
+            "-offlinePermitPath=$HOME/.flyway/permit.txt" \
             "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
             "-environments.shadow.user=sa" \
             "-environments.shadow.password=${SQL_SA_PASSWORD}" \
