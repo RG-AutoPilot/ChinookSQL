@@ -5,7 +5,7 @@ mcp-servers:
   flyway-mcp:
     type: 'local'
     command: 'flyway'
-    args: ['mcp', '-offlinePermitPath=${{ GITHUB.WORKSPACE }}/flyway-permit.txt']
+    args: ['mcp', '-offlinePermitPath=~/.flyway/permit.txt']
     tools: ["*"]
     env:
       "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true" 
