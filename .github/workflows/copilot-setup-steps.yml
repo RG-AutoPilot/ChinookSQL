@@ -22,7 +22,7 @@ jobs:
     env:
       # Points all Flyway commands in this job at the offline permit file written in Step 3.
       # The agent picks this up automatically without needing the secret value directly.
-      FLYWAY_OFFLINE_PERMIT_PATH: /tmp/flyway-permit.txt
+      FLYWAY_OFFLINE_PERMIT_PATH: ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
 
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
