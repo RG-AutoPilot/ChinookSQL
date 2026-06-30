@@ -1,5 +1,5 @@
 ---
-name: flyway-mcp-agent
+name: flyway-mcp-agent.md
 description: Generates Flyway Enterprise migration scripts from schema model changes. Edit the schema model, generate a versioned migration script, and open a pull request.
 ---
 
