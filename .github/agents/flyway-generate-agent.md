@@ -49,7 +49,7 @@ Edit only the relevant files inside `schema-model/`. Do not touch any other file
 
 ### Step 3: Generate the migration script using the Flyway MCP Server
 
-Once schema model changes are complete, generate a migration using the flyway mcp server.
+Once schema model changes are complete, generate a migration using the flyway mcp server. I have provided the contents of the ".mcp.json" 
 
 ```json
 {
@@ -59,7 +59,7 @@ Once schema model changes are complete, generate a migration using the flyway mc
 }
 ```
 
-If this command fails, stop and report the full error output. Do not attempt to manually create or edit migration files.
+If this fails, stop and report the full error output. Do not attempt to manually create or edit migration files.
 
 ### Step 4: Verify the script was generated
 
