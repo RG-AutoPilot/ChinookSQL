@@ -47,30 +47,16 @@ Read the issue or task description carefully. Identify exactly what schema chang
 
 Edit only the relevant files inside `schema-model/`. Do not touch any other files. Make the minimum changes necessary to satisfy the task.
 
-### Step 3: Generate the migration script
+### Step 3: Generate the migration script using the Flyway MCP Server
 
-Once schema model changes are complete, run the following command from the repository root. Do not modify the parameters.
+Once schema model changes are complete, generate a migration using the flyway mcp server.
 
-```bash
-WORKING_DIR=$(pwd)
-ARTIFACT_FILE="$WORKING_DIR/Flyway.Migrations.differences-$(date +%Y%m%d).zip"
-
-flyway diff generate \
-  "-offlinePermitPath=/tmp/flyway-permit.txt" \
-  "-diff.source=schemaModel" \
-  "-diff.target=migrations" \
-  "-diff.buildEnvironment=shadow" \
-  "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
-  "-environments.shadow.user=sa" \
-  "-environments.shadow.password=Redgate1!" \
-  "-diff.artifactFilename=$ARTIFACT_FILE" \
-  "-generate.artifactFilename=$ARTIFACT_FILE" \
-  "-generate.description=AIAgent_AutomatedMigrationScript" \
-  "-generate.location=$WORKING_DIR/migrations" \
-  "-generate.types=versioned,undo" \
-  "-generate.addTimestamp=true" \
-  "-workingDirectory=$WORKING_DIR" \
-  "-schemaModelSchemas="
+```json
+{
+  "mcpServers": {
+    "flyway": { "type": "stdio", "command": "flyway", "args": ["mcp"], "env": { "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true" } }
+  }
+}
 ```
 
 If this command fails, stop and report the full error output. Do not attempt to manually create or edit migration files.
