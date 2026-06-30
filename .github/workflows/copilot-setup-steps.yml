@@ -47,7 +47,7 @@ jobs:
             echo "ERROR: FLYWAY_OFFLINE_PERMIT secret is not available in this workflow context."
             exit 1
           fi
-          printf "%s" "$FLYWAY_OFFLINE_PERMIT" > /tmp/flyway-permit.txt
+          printf "%s" "$FLYWAY_OFFLINE_PERMIT" > ${{ GITHUB.WORKSPACE }}/flyway-permit.txt
           chmod 600 /tmp/flyway-permit.txt
           echo "Permit file written."
 
@@ -122,7 +122,7 @@ jobs:
         run: |
           set +e
           OUTPUT=$(flyway info \
-            "-offlinePermitPath=/tmp/flyway-permit.txt" \
+            "-offlinePermitPath=${{ GITHUB.WORKSPACE }}/flyway-permit.txt" \
             "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
             "-environments.shadow.user=sa" \
             "-environments.shadow.password=${SQL_SA_PASSWORD}" \
