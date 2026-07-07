@@ -5,7 +5,7 @@ mcp-servers:
   flyway-mcp:
     type: 'local'
     command: 'flyway'
-    args: ['mcp', '-offlinePermitPath=/home/runner/.flyway/permit.txt']
+    args: ['mcp']
     tools: ["*"]
     env:
       "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
