@@ -50,8 +50,8 @@ jobs:
           printf "%s" "$FLYWAY_OFFLINE_PERMIT" > "$HOME/.flyway/permit.txt"
           chmod 600 "$HOME/.flyway/permit.txt"
           
-          printf "%s" "$FLYWAY_OFFLINE_PERMIT" > "/tmp/flyway-permit.txt"
-          chmod 600 "/tmp/flyway-permit.txt"
+          printf "%s" "$FLYWAY_OFFLINE_PERMIT" > "/tmp/permit.txt"
+          chmod 600 "/tmp/permit.txt"
           echo "Permit file written."
 
       # Step 4 - Pull the SQL Server 2019 image before starting the container.
@@ -125,7 +125,7 @@ jobs:
         run: |
           set +e
           OUTPUT=$(flyway info \
-            "-offlinePermitPath=$HOME/.flyway/permit.txt" \
+            "-offlinePermitPath=/tmp/permit.txt" \
             "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
             "-environments.shadow.user=sa" \
             "-environments.shadow.password=${SQL_SA_PASSWORD}" \
