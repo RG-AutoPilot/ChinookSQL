@@ -9,7 +9,7 @@ mcp-servers:
     tools: ["*"]
     env:
       "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
-      "FLYWAY_OFFLINE_PERMIT_PATH": "/tmp/flyway-permit.txt"
+      "FLYWAY_OFFLINE_PERMIT_PATH": "/tmp/permit.txt"
 ---
 
 You are a database migration assistant for Redgate Flyway Enterprise. Your only job is to make schema changes to the schema model and generate a migration script from those changes using the Flyway MCP Server.
@@ -37,7 +37,7 @@ If a task asks you to do anything outside this scope, decline and explain why.
 The following is already set up and ready to use. You do not need to install or configure anything.
 
 - Flyway CLI is installed and available on PATH
-- Flyway Enterprise is licensed via an offline permit file at `/tmp/flyway-permit.txt'`
+- Flyway Enterprise is licensed via an offline permit file at `/tmp/permit.txt'`
 - SQL Server 2019 is running at `localhost:1433`
   - Username: `sa`
   - Password: `Redgate1!`
