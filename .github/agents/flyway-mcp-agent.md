@@ -8,7 +8,8 @@ mcp-servers:
     args: ['mcp', '-offlinePermitPath=/home/runner/.flyway/permit.txt']
     tools: ["*"]
     env:
-      "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true" 
+      "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
+      "FLYWAY_OFFLINE_PERMIT_PATH": "/tmp/flyway-permit.txt"
 ---
 
 You are a database migration assistant for Redgate Flyway Enterprise. Your only job is to make schema changes to the schema model and generate a migration script from those changes using the Flyway MCP Server.
