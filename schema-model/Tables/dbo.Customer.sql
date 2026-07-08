@@ -14,7 +14,9 @@ CREATE TABLE [dbo].[Customer]
 [Email] [nvarchar] (60) NOT NULL,
 [SupportRepId] [int] NULL,
 [TestID] [int] NULL,
-[HuxDemo] [int] NULL
+[HuxDemo] [int] NULL,
+[TestRoger] [int] NULL,
+[SDRDemo] [int] NULL
 )
 GO
 ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED ([CustomerId])
@@ -22,8 +24,4 @@ GO
 CREATE NONCLUSTERED INDEX [IFK_CustomerSupportRepId] ON [dbo].[Customer] ([SupportRepId])
 GO
 ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [FK_CustomerSupportRepId] FOREIGN KEY ([SupportRepId]) REFERENCES [dbo].[Employee] ([EmployeeId])
-GO
-CREATE NONCLUSTERED INDEX [IFK_CustomerTestID] ON [dbo].[Customer] ([TestID])
-GO
-ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [FK_CustomerTestID] FOREIGN KEY ([TestID]) REFERENCES [dbo].[Employee] ([EmployeeId])
 GO
