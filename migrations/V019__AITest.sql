@@ -1,1 +1,0 @@
-CREATE TABLE AiBlogTest (Test INT)

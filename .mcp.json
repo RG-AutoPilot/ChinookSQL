@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "flyway": { "type": "stdio", "command": "flyway", "args": ["mcp"], "env": { "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true" , "FLYWAY_OFFLINE_PERMIT_PATH": "permit.txt"} }
+  }
+}
