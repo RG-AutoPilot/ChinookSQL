@@ -60,7 +60,12 @@ jobs:
       # Step 4 - Verify SQL_SA_PASSWORD is set before attempting to start the container.
       # If the secret is missing or empty, SQL Server will silently fail to initialise
       # and the health-check loop will time out. Failing fast here gives a clearer error.
+      # SQL_SA_PASSWORD is set again here at step level (in addition to the job-level env)
+      # to test whether the Copilot coding agent resolves secrets.* differently for
+      # step-level vs job-level env - job-level alone has been coming back empty in agent runs.
       - name: Verify SQL_SA_PASSWORD is set
+        env:
+          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           if [ -z "${SQL_SA_PASSWORD}" ]; then
             echo "ERROR: SQL_SA_PASSWORD secret is not available in this workflow context."
