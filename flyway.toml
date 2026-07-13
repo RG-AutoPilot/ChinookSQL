@@ -150,9 +150,9 @@ provisioner = "clean"
 url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
 
 [environments.shadow]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Shadow;encrypt=mandatory;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost:1433;databaseName=Chinook_Shadow;encrypt=false;trustServerCertificate=true"
 displayName = "Shadow database"
 provisioner = "create-database"
 user="sa"
-password="${env.SQL_SA_PASSWORD}"
+password="${env.COPILOT_MCP_SQL_SA_PASSWORD}"
 
