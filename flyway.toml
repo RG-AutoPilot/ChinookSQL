@@ -152,14 +152,4 @@ url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinoo
 [environments.shadow]
 url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Shadow;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Shadow database"
-provisioner = "backup"
-
-[environments.shadow.resolvers.backup]
-backupFilePath = "C:\\backup\\Chinook.bak"
-backupVersion = "001"
-
-  [environments.shadow.resolvers.backup.sqlserver]
-  generateWithMove = true
-
-[environments.target6]
-url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Demo;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
+provisioner = "clean"
