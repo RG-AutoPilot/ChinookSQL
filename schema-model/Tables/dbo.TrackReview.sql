@@ -5,7 +5,8 @@ CREATE TABLE [dbo].[TrackReview]
 [CustomerId] [int] NOT NULL,
 [Rating] [int] NULL,
 [ReviewText] [nvarchar] (1000) NULL,
-[ReviewDate] [datetime] NOT NULL
+[ReviewDate] [datetime] NOT NULL,
+[RevenueGrossed] [decimal] (18, 2) NULL
 )
 GO
 ALTER TABLE [dbo].[TrackReview] ADD CONSTRAINT [PK_TrackReview] PRIMARY KEY CLUSTERED ([ReviewId])
