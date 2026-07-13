@@ -57,12 +57,23 @@ jobs:
           chmod 600 "/tmp/permit.txt"
           echo "Permit file written."
 
-      # Step 4 - Pull the SQL Server 2019 image before starting the container.
+      # Step 4 - Verify SQL_SA_PASSWORD is set before attempting to start the container.
+      # If the secret is missing or empty, SQL Server will silently fail to initialise
+      # and the health-check loop will time out. Failing fast here gives a clearer error.
+      - name: Verify SQL_SA_PASSWORD is set
+        run: |
+          if [ -z "${SQL_SA_PASSWORD}" ]; then
+            echo "ERROR: SQL_SA_PASSWORD secret is not available in this workflow context."
+            exit 1
+          fi
+          echo "SQL_SA_PASSWORD is set."
+
+      # Step 5 - Pull the SQL Server 2019 image before starting the container.
       # Doing this separately makes it easier to spot download failures in the logs.
       - name: Pull SQL Server 2019 Docker image
         run: docker pull mcr.microsoft.com/mssql/server:2019-latest
 
-      # Step 5 - Start SQL Server container.
+      # Step 6 - Start SQL Server container.
       # SQL_SA_PASSWORD is already available as a job-level env var.
       - name: Start SQL Server container
         run: |
@@ -73,7 +84,7 @@ jobs:
             -p 1433:1433 \
             -d mcr.microsoft.com/mssql/server:2019-latest
 
-      # Step 6 - Wait for SQL Server to finish starting before trying to create the database.
+      # Step 7 - Wait for SQL Server to finish starting before trying to create the database.
       # Checks every 5 seconds for up to 2.5 minutes (30 attempts).
       # SA_PW is passed via docker exec -e so the outer shell expands it before it crosses
       # the container boundary. This avoids escaping issues inside the container.
@@ -99,7 +110,13 @@ jobs:
             fi
           done
 
-      # Step 7 - Create the Chinook_Shadow database.
+      # Step 8 - Dump SQL Server container logs on failure for diagnostics.
+      # Runs only when a previous step fails so the real SQL Server error is visible in the log.
+      - name: Dump SQL Server container logs
+        if: failure()
+        run: docker logs sqlserver_agent
+
+      # Step 9 - Create the Chinook_Shadow database.
       # Flyway will use this as the build environment when generating migration scripts.
       - name: Create Chinook_Shadow database
         run: |
@@ -112,7 +129,7 @@ jobs:
           '
           echo "Chinook_Shadow database created."
 
-      # Step 8 - Verify Flyway is licensed before the agent runs.
+      # Step 10 - Verify Flyway is licensed before the agent runs.
       # If the permit file is missing or invalid, Flyway will report Community Edition and this
       # step will fail, stopping the job before the agent starts.
       - name: Verify Flyway Enterprise licence
