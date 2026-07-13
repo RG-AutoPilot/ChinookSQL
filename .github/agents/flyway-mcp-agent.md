@@ -10,6 +10,7 @@ mcp-servers:
     env:
       "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
       "FLYWAY_OFFLINE_PERMIT_PATH": "/tmp/permit.txt"
+      "SQL_SA_PASSWORD": "$SQL_SA_PASSWORD"
 ---
 
 You are a database migration assistant for Redgate Flyway Enterprise. Your only job is to make schema changes to the schema model and generate a migration script from those changes using the Flyway MCP Server.
@@ -40,8 +41,8 @@ The following is already set up and ready to use. You do not need to install or 
 - Flyway Enterprise is licensed via an offline permit file at `/tmp/permit.txt'`
 - SQL Server 2019 is running at `localhost:1433`
   - Username: `sa`
-  - Password: `Redgate1!`
-  - Shadow database: `AutoPilotShadow`
+  - Password: available via `$SQL_SA_PASSWORD` environment variable
+  - Shadow database: `Chinook_Shadow`
 
 The Flyway project root is the repository root. `schema-model/`, `migrations/`, and `flyway.toml` all live at the root level.
 
@@ -51,7 +52,7 @@ Follow these steps in order. Do not skip any step. Do not proceed to the next st
 
 ### Step 1: Understand the task
 
-Read the issue or task description carefully. Identify exactly what schema changes are needed. If the description is ambiguous, inspect the existing files in `schema-model/` to understand the current structure before making any changes.
+Read the issue or task description carefully. Identify exactly what schema changes are needed. If the description is ambiguous, inspect the existing files in `schema-model/` to understand the current state of the database.
 
 ### Step 2: Make schema model changes
 
