@@ -16,7 +16,8 @@ CREATE TABLE [dbo].[Customer]
 [TestID] [int] NULL,
 [HuxDemo] [int] NULL,
 [TestRoger] [int] NULL,
-[SDRDemo] [int] NULL
+[SDRDemo] [int] NULL,
+[TestDemo] [int] NULL
 )
 GO
 ALTER TABLE [dbo].[Customer] ADD CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED ([CustomerId])
