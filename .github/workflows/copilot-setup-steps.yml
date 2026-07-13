@@ -101,20 +101,20 @@ jobs:
             fi
           done
 
-      # Step 7 - Create the AutoPilotShadow database.
+      # Step 7 - Create the Chinook_Shadow database.
       # Flyway will use this as the build environment when generating migration scripts.
-      - name: Create AutoPilotShadow database
+      - name: Create Chinook_Shadow database
         env:
           SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           docker exec -e SA_PW="${SQL_SA_PASSWORD}" sqlserver_agent bash -c '
             if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
-              /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PW" -Q "CREATE DATABASE AutoPilotShadow"
+              /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PW" -Q "CREATE DATABASE Chinook_Shadow"
             else
-              /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PW" -Q "CREATE DATABASE AutoPilotShadow"
+              /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PW" -Q "CREATE DATABASE Chinook_Shadow"
             fi
           '
-          echo "AutoPilotShadow database created."
+          echo "Chinook_Shadow database created."
 
       # Step 8 - Verify Flyway is licensed before the agent runs.
       # If the permit file is missing or invalid, Flyway will report Community Edition and this
@@ -126,7 +126,7 @@ jobs:
           set +e
           OUTPUT=$(flyway info \
             "-offlinePermitPath=/tmp/permit.txt" \
-            "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=AutoPilotShadow;encrypt=false;trustServerCertificate=true" \
+            "-environments.shadow.url=jdbc:sqlserver://localhost:1433;databaseName=Chinook_Shadow;encrypt=false;trustServerCertificate=true" \
             "-environments.shadow.user=sa" \
             "-environments.shadow.password=${SQL_SA_PASSWORD}" \
             "-environment=shadow" \
