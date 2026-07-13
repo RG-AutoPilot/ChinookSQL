@@ -5,7 +5,7 @@ mcp-servers:
   flyway-mcp:
     type: 'local'
     command: 'flyway'
-    args: ['mcp']
+    args: ['mcp', '-mcp.toolsets=all']
     tools: ["*"]
     env:
       "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
