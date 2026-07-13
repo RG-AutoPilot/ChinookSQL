@@ -23,6 +23,9 @@ jobs:
       # Points all Flyway commands in this job at the offline permit file written in Step 3.
       # The agent picks this up automatically without needing the secret value directly.
       FLYWAY_OFFLINE_PERMIT_PATH: $HOME/.flyway/permit.txt
+      # Exposed at job level so the Flyway MCP server subprocess inherits it.
+      # The MCP server is launched as a child process and cannot see step-level env vars.
+      SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
 
     steps:
       # Step 1 - Check out the repository so the Flyway install script is available.
@@ -60,11 +63,8 @@ jobs:
         run: docker pull mcr.microsoft.com/mssql/server:2019-latest
 
       # Step 5 - Start SQL Server container.
-      # SQL_SA_PASSWORD is passed directly via step-level env to ensure it is available
-      # in both the Actions and Copilot agent runner contexts.
+      # SQL_SA_PASSWORD is already available as a job-level env var.
       - name: Start SQL Server container
-        env:
-          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           docker run \
             --name sqlserver_agent \
@@ -78,8 +78,6 @@ jobs:
       # SA_PW is passed via docker exec -e so the outer shell expands it before it crosses
       # the container boundary. This avoids escaping issues inside the container.
       - name: Wait for SQL Server to be ready
-        env:
-          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           echo "Waiting for SQL Server to start..."
           for i in {1..30}; do
@@ -104,8 +102,6 @@ jobs:
       # Step 7 - Create the Chinook_Shadow database.
       # Flyway will use this as the build environment when generating migration scripts.
       - name: Create Chinook_Shadow database
-        env:
-          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           docker exec -e SA_PW="${SQL_SA_PASSWORD}" sqlserver_agent bash -c '
             if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
@@ -120,8 +116,6 @@ jobs:
       # If the permit file is missing or invalid, Flyway will report Community Edition and this
       # step will fail, stopping the job before the agent starts.
       - name: Verify Flyway Enterprise licence
-        env:
-          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
         run: |
           set +e
           OUTPUT=$(flyway info \
