@@ -1,0 +1,13 @@
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+--GO
+CREATE PROCEDURE [dbo].[getProducts]
+    @parameter_name AS INT
+-- WITH ENCRYPTION, RECOMPILE, EXECUTE AS CALLER|SELF|OWNER| 'user_name'
+AS
+BEGIN
+    SELECT * FROM dbo.CustomerProducts
+END
+GO
