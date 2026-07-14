@@ -5,7 +5,8 @@ CREATE TABLE [dbo].[AlbumReview]
 [CustomerId] [int] NOT NULL,
 [Rating] [int] NULL,
 [ReviewText] [nvarchar] (1000) NULL,
-[ReviewDate] [datetime] NOT NULL
+[ReviewDate] [datetime] NOT NULL,
+[IsEnjoying] [bit] NOT NULL CONSTRAINT [DF_AlbumReview_IsEnjoying] DEFAULT ((0))
 )
 GO
 ALTER TABLE [dbo].[AlbumReview] ADD CONSTRAINT [PK_AlbumReview] PRIMARY KEY CLUSTERED ([ReviewId])
