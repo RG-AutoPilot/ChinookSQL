@@ -8,7 +8,8 @@ CREATE TABLE [dbo].[Track]
 [Composer] [nvarchar] (220) NULL,
 [Milliseconds] [int] NOT NULL,
 [Bytes] [int] NULL,
-[UnitPrice] [numeric] (10, 2) NOT NULL
+[UnitPrice] [numeric] (10, 2) NOT NULL,
+[GrossRevenue] [numeric] (10, 2) NOT NULL CONSTRAINT [DF_Track_GrossRevenue] DEFAULT ((0.00))
 )
 GO
 ALTER TABLE [dbo].[Track] ADD CONSTRAINT [PK_Track] PRIMARY KEY CLUSTERED ([TrackId])

@@ -2,7 +2,8 @@ CREATE TABLE [dbo].[Album]
 (
 [AlbumId] [int] NOT NULL IDENTITY(1, 1),
 [Title] [nvarchar] (160) NOT NULL,
-[ArtistId] [int] NOT NULL
+[ArtistId] [int] NOT NULL,
+[GrossRevenue] [numeric] (10, 2) NOT NULL CONSTRAINT [DF_Album_GrossRevenue] DEFAULT ((0.00))
 )
 GO
 ALTER TABLE [dbo].[Album] ADD CONSTRAINT [PK_Album] PRIMARY KEY CLUSTERED ([AlbumId])
