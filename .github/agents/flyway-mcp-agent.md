@@ -68,6 +68,10 @@ If this fails, stop and report the full error output. Do not attempt to manually
 
 Check that at least one new `.sql` file now exists in `migrations/`. If no file was created, report the error and stop. Do not continue to step 5.
 
-### Step 5: Wait for Pull Request
+### Step 5: Verify Code Follows All Code Rules
+
+Use the Flyway MCP Server to check code against code analysis, as well as passing the code review and thoughts into the PR Notes
+
+### Step 6: Wait for Pull Request
 
 Do not skip CI, do not open the PR yourself. Allow a human to create the PR once you are done, to make sure CI is triggered and Build.
