@@ -145,6 +145,7 @@ provisioner = "clean"
 [environments.Build]
 url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Build;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Build Database"
+provisioner = "clean"
 
 [environments.Dev]
 url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
