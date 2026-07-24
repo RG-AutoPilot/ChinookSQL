@@ -1,1 +1,1 @@
-DROP TABLE Customers.asd
+CREATE TABLE HuxDemoTest (Test INT)
