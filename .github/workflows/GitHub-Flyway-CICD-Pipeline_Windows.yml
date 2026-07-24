@@ -9,7 +9,7 @@
 # Description: GitHub YAML Pipeline for Linux Runners
 # ===========================
  
-name: GitHub-Flyway-AutoPilot-Pipeline-Windows
+name: Flyway-Live-Release
 
 on:
   push:
