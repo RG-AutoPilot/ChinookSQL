@@ -153,3 +153,5 @@ url = "jdbc:sqlserver://localhost;authentication=sqlPassword;databaseName=Chinoo
 url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Shadow;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Shadow database"
 provisioner = "create-database"
+user="sa"
+password="${env.SQL_SA_PASSWORD}"
