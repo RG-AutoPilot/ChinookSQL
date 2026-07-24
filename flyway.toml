@@ -154,4 +154,4 @@ url = "jdbc:sqlserver://localhost:1433;databaseName=Chinook_Shadow;encrypt=false
 displayName = "Shadow database"
 provisioner = "create-database"
 user="sa"
-password="${env.SQL_SA_PASSWORD}"
+
