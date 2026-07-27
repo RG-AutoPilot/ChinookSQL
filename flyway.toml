@@ -150,3 +150,9 @@ provisioner = "clean"
 url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Dev;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Dev"
 
+[environments.shadow]
+url = "jdbc:sqlserver://localhost:1433;databaseName=Chinook_Shadow;encrypt=false;trustServerCertificate=true"
+displayName = "Shadow database"
+provisioner = "create-database"
+user="sa"
+password = "${SQL_SA_PASSWORD}"
