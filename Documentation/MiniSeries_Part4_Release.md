@@ -1,14 +1,14 @@
 # Agentic Workflows with Flyway — Part 4: The release
 
-*Part 4 of four — the finale. [Part 3](./MiniSeries_Part3_copilot_setup.md) gave the agent a Flyway install and credentials. Now the AI's PR is green, a human has approved, and we're ready to release. This post is about making that release safe, gated, and defensible.*
+*Part 4 of four — the finale. [Part 3](./MiniSeries_Part3_Policies_And_Build.md) locked down the repo so nothing merges without a green build and a human approval. Now the AI's PR is merged and we're ready to release. This post is about making that release safe, gated, and defensible.*
 
-The release is where V3 earns its keep. Everything up to this point — schema model, `agent.md`, MCP, `copilot-setup-steps.yml`, build stage — was about making sure the AI can produce a *candidate* change safely. The release is where we prove that what's about to touch production is what we think it is.
+The release is where an agentic workflow earns its keep. Everything up to this point — runtime, `agent.md`, MCP wiring, branch policies, PR build — was about producing a safe *candidate* change. The release is where we prove that what's about to touch production is what we think it is.
 
-Two artifacts do the heavy lifting: the **change report** and the **drift report**. Both are Flyway Enterprise features. Both are things you can generate before you release, so nothing is a surprise.
+Two artifacts do the heavy lifting: the **change report** and the **drift report**. Both are Flyway Enterprise features. Both are generated *before* deploy, so nothing is a surprise.
 
 ## The release pipeline
 
-The full release pipeline lives at `.github/workflows/GitHub-Flyway-CICD-Pipeline_Windows.yml`. It's triggered when a merge lands on `main` that touches `migrations/**` — i.e. when the AI's script (produced in Part 2, validated by the build in Part 1) has been reviewed and approved by a human.
+The full release pipeline lives at `.github/workflows/GitHub-Flyway-CICD-Pipeline_Windows.yml`. It's triggered when a merge lands on `main` that touches `migrations/**` — i.e. when the AI's script (produced in Part 2, validated by the build in Part 3) has been reviewed, approved, and merged.
 
 The pipeline has three jobs, wired in sequence: `build` → `test` → `prod`.
 
@@ -77,7 +77,7 @@ The `prod` job generates it before deploying:
 
 `flyway check -dryrun -changes -drift` does three things in one call:
 
-- **`-dryrun`** — connects to Prod, works out what would happen, but doesn't run any DDL.
+- **`-dryrun`** — connects to Prod, works out what would happen, but runs no DDL.
 - **`-changes`** — produces the change report: exactly what statements will run when we do release.
 - **`-drift`** — produces the drift report at the same time (more on this below).
 
@@ -95,7 +95,7 @@ Drift is when production has quietly diverged from what version control says it 
 
 Drift always happens eventually. What matters is knowing about it *before* you deploy on top of it.
 
-The same `flyway check -dryrun -changes -drift` command produces the drift section of the same report. `-check.buildEnvironment=Check` is Flyway building a clean copy of what version control says the DB should look like, then comparing that against Prod.
+The same `flyway check -dryrun -changes -drift` command produces the drift section of the same report. `-check.buildEnvironment=Check` tells Flyway to build a clean copy of what version control says the DB should look like, then compare that against Prod.
 
 [TODO: screenshot — the drift report showing an unexpected object in Prod that isn't in version control]
 
@@ -124,31 +124,31 @@ Reports are uploaded as GitHub Actions artifacts on every run, which gives you a
 
 Here's what a release looks like from the moment the AI opens its branch to the moment production is updated:
 
-1. **Copilot boots.** `copilot-setup-steps.yml` runs — Flyway installed, permit written, shadow DB created, Enterprise licence verified.
-2. **Agent runs.** `flyway-mcp-agent.md` scopes it to `schema-model/`. It edits the relevant SQL files.
-3. **Migration generated.** The agent calls the Flyway MCP; a versioned script drops into `migrations/`.
+1. **Copilot boots.** `copilot-setup-steps.yml` runs — Flyway installed, permit written, shadow DB created, Enterprise licence verified. *(Part 1)*
+2. **Agent runs.** `flyway-mcp-agent.md` scopes it to `schema-model/`. It edits the relevant SQL files. *(Part 2)*
+3. **Migration generated.** The agent calls the Flyway MCP; a versioned script drops into `migrations/`. *(Part 2)*
 4. **PR opened.** A human opens the PR — the agent deliberately doesn't, so CI is guaranteed to fire.
-5. **Build runs.** `FlywayBuildOnly.yml` — deploy check, code analysis, tSQLt tests. Blocks merge if any fail.
-6. **Human reviews.** Reads the code, reads the SARIF findings, reads the build output. Approves or rejects.
-7. **Merge to main.** Triggers `GitHub-Flyway-AutoPilot-Pipeline-Windows`.
+5. **Build runs.** `FlywayBuildOnly.yml` — deploy check, code analysis, tSQLt tests. Blocks merge if any fail. *(Part 3)*
+6. **Human reviews.** Reads the code, reads the SARIF findings, reads the build output. Approves or rejects. *(Part 3)*
+7. **Merge to main.** Triggers the release pipeline.
 8. **Build re-runs.** `build` job in the release pipeline confirms nothing broke on merge.
-9. **Test deploys.** `test` job generates reports against Test, then migrates Test.
+9. **Test deploys.** `test` job generates change + drift reports against Test, then migrates Test.
 10. **Prod pauses at the gate.** `prod` job generates the change and drift reports against Prod, then pauses at the `prod` environment for reviewer approval.
 11. **Reviewer approves.** After reading both reports.
 12. **Flyway deploys to Prod.**
 13. **Reports retained.** As build artifacts, tied to the run ID.
 
-[TODO: screenshot — a paused release in GitHub Actions, showing the prod environment awaiting approval, with the change and drift report artifacts linked]
+[TODO: screenshot — a paused release in GitHub Actions, showing the `prod` environment awaiting approval, with the change and drift report artifacts linked]
 
-Compare this to V1 — human writes prompt, AI writes script, someone runs it straight at production. The release above is barely slower, and it's a completely different risk profile.
+Compare this to a workflow where a human writes a prompt, the AI writes a script, and someone runs it straight at production. The release above is barely slower, and it's a completely different risk profile.
 
 ## We're done
 
-Across the four parts we've built V3:
+Across the four parts we've turned a normal Flyway project into an agentic one:
 
-- **Part 1** — a Flyway project in GitHub, schema model tracked as plain SQL, branch policies protecting main, build stage running on every PR.
-- **Part 2** — an `agent.md` at `.github/agents/flyway-mcp-agent.md` that tells the AI to edit the model and hand script generation to Flyway, plus a `.mcp.json` that makes the Flyway CLI callable as MCP tools.
-- **Part 3** — a `copilot-setup-steps.yml` that installs Flyway, writes the permit, spins up SQL Server and the shadow database, and verifies Enterprise before the agent runs.
+- **Part 1** — `copilot-setup-steps.yml` that installs Flyway, writes the permit, spins up SQL Server and the shadow database, and verifies Enterprise before the agent runs.
+- **Part 2** — an `agent.md` at `.github/agents/flyway-mcp-agent.md` that tells the AI to edit the model and hand script generation to Flyway, plus a `.mcp.json` that makes the Flyway CLI callable as MCP tools from local agents too.
+- **Part 3** — branch protection on `main` and a PR build (`FlywayBuildOnly.yml`) that migrates, checks, and tests on every pull request.
 - **Part 4** — a gated release with change and drift reports reviewed before every deploy, artifacts retained for audit.
 
 Everything in that stack is off-the-shelf. Flyway Enterprise, GitHub, and a bit of markdown and yaml. What it buys you is the ability to say *yes* to AI on your database with a straight face.

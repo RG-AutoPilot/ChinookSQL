@@ -114,6 +114,9 @@ Look after yourself out there. Use AI wisely. And let the humans around you know
 
 ### Want to build this yourself? — Agentic Workflows with Flyway
 
-- **Part 1** — V2 end-to-end: version control, the build stage, GitHub branch policies, and the Flyway agent deploying through Actions.
-- **Part 2** — V3 setup: `agent.md`, `copilot-setup.yml`, and handing script generation to Flyway's compare engine.
-- **Part 3** — The audit trail: change reports, drift reports, and gated releases through GitHub environments.
+This mini-series assumes you already have a working Flyway Enterprise project (Flyway Autopilot or the Redgate University "Getting Started with Flyway" course will get you there in an afternoon). From there, four short posts turn it into an agentic project:
+
+- **Part 1** — Configuring the agent's runtime: `copilot-setup-steps.yml` that installs Flyway, writes the licence, and spins up a shadow database for the agent.
+- **Part 2** — Setting AI behaviour: `agent.md` scopes the AI to `schema-model/` and hands script generation to Flyway; `.mcp.json` wires the Flyway CLI up as callable MCP tools.
+- **Part 3** — Repo policies and the PR build: branch protection on `main`, a Flyway build stage running on every pull request, SARIF findings surfaced on the PR.
+- **Part 4** — The release: change and drift reports before every deploy, a GitHub Environment gate before Prod, artifacts retained for audit.
