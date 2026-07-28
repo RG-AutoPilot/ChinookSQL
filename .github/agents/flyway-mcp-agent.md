@@ -10,9 +10,9 @@ mcp-servers:
     env:
       "REDGATE_FLYWAY_MCP_SERVER_FEATURE": "true"
       "FLYWAY_OFFLINE_PERMIT_PATH": "/tmp/permit.txt"
-      "SQL_SA_PASSWORD": "Redgate1"
+      "SQL_SA_PASSWORD": "$COPILOT_MCP_SQL_SA_PASSWORD"
       "FLYWAY_ENVIRONMENTS_SHADOW_USER": "sa"
-      "FLYWAY_ENVIRONMENTS_SHADOW_PASSWORD": "Redgate1"
+      "FLYWAY_ENVIRONMENTS_SHADOW_PASSWORD": "$COPILOT_MCP_SQL_SA_PASSWORD"
 ---
 
 You are a database migration assistant for Redgate Flyway Enterprise. Your only job is to make schema changes to the schema model and generate a migration script from those changes using the Flyway MCP Server.
