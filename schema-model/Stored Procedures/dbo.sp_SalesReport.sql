@@ -9,7 +9,6 @@ CREATE   PROCEDURE [dbo].[sp_SalesReport]
 AS
 BEGIN
     SET NOCOUNT ON;
-    -- Created by Huxley, changed number of days to 31
     -- Default to last 31 days if no dates provided
     IF @StartDate IS NULL SET @StartDate = DATEADD(DAY, -31, GETDATE());
     IF @EndDate IS NULL SET @EndDate = GETDATE();
