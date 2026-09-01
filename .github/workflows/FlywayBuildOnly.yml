@@ -53,7 +53,7 @@ jobs:
       - name: Flyway Reset Build
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway clean -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=true" -cleanDisabled=false ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="${{ secrets.FLYWAY_TOKEN }}
+          flyway clean -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=true" -cleanDisabled=false ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="${{ secrets.FLYWAY_TOKEN }}"
       # Step 2a- Create Check Report (Drift Detection - Using Deployed Snapshot)
       - name: Flyway Check Report - Dryrun
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
