@@ -75,8 +75,8 @@ jobs:
       AZURE_SQL_SERVER: 'chinookai.database.windows.net'
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
-      REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME }}"
-      REPORT_DATABASE_PASSWORD: "${{ secrets.REPORT_DATABASE_PASSWORD }}"
+      REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME || secrets.TARGET_DATABASE_USERNAME }}"
+      REPORT_DATABASE_PASSWORD: "${{ secrets.REPORT_DATABASE_PASSWORD || secrets.TARGET_DATABASE_PASSWORD }}"
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
       EXECUTE_BUILD: 'true' # Turn to false to skip the build stage tasks
       publishArtifacts: 'true' # Turn to false to skip the artifact upload
@@ -102,12 +102,12 @@ jobs:
       - name: Flyway Check Report - Dryrun
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway check -dryrun -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-reportEnabled=true" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" ${{ env.CUSTOM_PARAMS }}
+          flyway check -dryrun -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-reportEnabled=true" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" ${{ env.CUSTOM_PARAMS }}
       # Step 2b - Create Check Report (Changes and Code Analysis)
       - name: Flyway Check Report - Code Analysis
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway check -changes -code -environment="Prod" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
+          flyway check -changes -code -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
       # Step 3 - Install Unit Tests via Flyway Prepare Deploy
       - name: Flyway - Install Unit Tests
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
