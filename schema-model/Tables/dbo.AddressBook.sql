@@ -6,9 +6,8 @@ CREATE TABLE [dbo].[AddressBook]
 [Age] [int] NULL,
 [TwitterID] [nchar] (10) NULL,
 [Test] [nchar] (10) NULL,
-[ReviewId] [int] NULL,
-CONSTRAINT [PK_AddressBook] PRIMARY KEY CLUSTERED ([AddressBookId])
+[ReviewId] [int] NULL
 )
 GO
-ALTER TABLE [dbo].[AddressBook] ADD CONSTRAINT [FK_AddressBook_MCPReview] FOREIGN KEY ([ReviewId]) REFERENCES [dbo].[MCPReview] ([ReviewId])
+ALTER TABLE [dbo].[AddressBook] ADD CONSTRAINT [PK_AddressBook] PRIMARY KEY CLUSTERED ([AddressBookId])
 GO
