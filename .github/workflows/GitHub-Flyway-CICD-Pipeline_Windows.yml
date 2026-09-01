@@ -65,13 +65,14 @@ jobs:
       contents: read
     name: Deploy Build
     # The type of runner that the job will run on
-    runs-on: "huxLocal" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+    runs-on: windows-latest # GitHub-hosted Windows runner; Flyway CLI is installed via Chocolatey in the first step
     environment: 'build'
     env:
       stage: 'Build'
       displayName: 'Build'
       DATABASE_NAME: 'Chinook_Build'
-      ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file. 
+      ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file.
+      AZURE_SQL_SERVER: 'chinookai.database.windows.net'
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME }}"
@@ -82,6 +83,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
+
+      - name: Install Flyway CLI
+        shell: pwsh
+        env:
+          FLYWAY_VERSION: ${{ env.FLYWAY_VERSION }}
+          FLYWAY_INSTALL_DIRECTORY: ${{ env.FLYWAY_INSTALL_DIRECTORY }}
+        run: |
+          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
+          "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
      
       # Step 2 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
       - name: Validate Migrate Scripts
@@ -109,8 +119,9 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
+          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
           $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
-          $result = Invoke-Sqlcmd -ServerInstance ".\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query $query
+          $result = Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query $query
           Write-Host "Found $($result.TestCount) tSQLt test(s)"
           if ($result.TestCount -eq 0) {
               Write-Host "::warning::No tests found!"
@@ -121,7 +132,7 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          Invoke-Sqlcmd -ServerInstance ".\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+          Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
       # Step 3c - Publish Test Results as Artifact
       - name: Publish Test Results
         if: always()
@@ -165,13 +176,13 @@ jobs:
   test:
     name: Deploy Test
     # The type of runner that the job will run on
-    runs-on: "huxLocal" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+    runs-on: windows-latest # GitHub-hosted Windows runner
     environment: 'test' # This refers to GitHub's Environment name
     if: ${{ true }} #Set this variable to false to temporarily disable the job
     needs: build
     env:
       stage: 'Test'
-      DATABASE_NAME: "AutoPilotTest"
+      DATABASE_NAME: "Chinook_Test"
       ENVIRONMENT: "Test" # Refers to the environment in the Flyway Project TOML file.
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
@@ -182,6 +193,17 @@ jobs:
       generateReport: 'true' # Turn to false to skip the CHECK report stage tasks
       FLYWAY_CHECK_DRIFT_ON_MIGRATE: 'true' # Turn to false to skip the Drift Report upload to Flyway Pipelines (If enabled)
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Flyway CLI
+        shell: pwsh
+        env:
+          FLYWAY_VERSION: ${{ env.FLYWAY_VERSION }}
+          FLYWAY_INSTALL_DIRECTORY: ${{ env.FLYWAY_INSTALL_DIRECTORY }}
+        run: |
+          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
+          "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - name: Create Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
@@ -203,27 +225,37 @@ jobs:
   prod:
     name: Deploy Prod
     # The type of runner that the job will run on
-    runs-on: "huxLocal" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+    runs-on: windows-latest # GitHub-hosted Windows runner
     environment: 'prod'
     if: ${{ true }}
     needs: test
     env:
       stage: 'Prod'
-      DATABASE_NAME: "AutoPilotProd"
+      DATABASE_NAME: "Chinook"
       ENVIRONMENT: "Prod" # Refers to the environment name in the Flyway Project TOML file.
       TARGET_DATABASE_URL: "${{ secrets.TARGET_DATABASE_URL }}"
-      TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}" 
-      TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}" 
+      TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
+      TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       REPORT_ENVIRONMENT: "Check"
       REPORT_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       REPORT_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
       generateReport: 'true' # Turn to false to skip the CHECK report stage tasks
       FLYWAY_CHECK_DRIFT_ON_MIGRATE: 'true' # Turn to false to skip the Drift Report upload to Flyway Pipelines (If enabled)
- 
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-     
+      - uses: actions/checkout@v4
+
+      - name: Install Flyway CLI
+        shell: pwsh
+        env:
+          FLYWAY_VERSION: ${{ env.FLYWAY_VERSION }}
+          FLYWAY_INSTALL_DIRECTORY: ${{ env.FLYWAY_INSTALL_DIRECTORY }}
+        run: |
+          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
+          "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - name: Create Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
         run: |

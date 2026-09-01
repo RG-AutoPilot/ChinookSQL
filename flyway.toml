@@ -129,28 +129,28 @@ transportClrDataTypesAsBinary = false
   table = "AppConfig"
 
 [environments.Test]
-url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Test;encrypt=optional;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Test;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Test Database"
 
 [environments.Prod]
-url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook;encrypt=optional;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Production Database"
 
 [environments.Check]
-url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=optional;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Check;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Check Database"
 provisioner = "clean"
 
 [environments.Build]
-url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Build;encrypt=optional;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Build;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Build Database"
 provisioner = "clean"
 
 [environments.shadow]
-url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Shadow;encrypt=optional;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Shadow;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Shadow database"
 provisioner = "create-database"
 
 [environments.development]
-url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=optional;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
 displayName = "Development database"

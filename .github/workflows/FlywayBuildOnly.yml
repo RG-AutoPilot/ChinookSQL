@@ -9,13 +9,13 @@ on:
 
 jobs:
   generate-and-build:
-    runs-on: huxLocal
+    runs-on: windows-latest
     permissions:
       contents: write
       pull-requests: write
       checks: write
       security-events: write
-      actions: read 
+      actions: read
     name: Deploy Build
     environment: 'build'
     env:
@@ -23,6 +23,7 @@ jobs:
       displayName: 'Build'
       DATABASE_NAME: 'Chinook_Build'
       ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file.
+      AZURE_SQL_SERVER: 'chinookai.database.windows.net'
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME }}"
@@ -39,21 +40,14 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Optional - If Enabled, Flyway CLI will be validated and installed if not present
-      - name: Flyway - CLI Install Manual Validation
-        if: env.FLYWAY_CLI_INSTALL_CHECK == 'true'
+      - name: Install Flyway CLI
+        shell: pwsh
+        env:
+          FLYWAY_VERSION: Latest
+          FLYWAY_INSTALL_DIRECTORY: C:\FlywayCLI
         run: |
-          $scriptPath = "${{ GITHUB.WORKSPACE }}/scripts/Flyway_DownloadAndInstallCLI.ps1"
-          if (Test-Path $scriptPath) {
-            echo "Script found. Running Flyway_DownloadAndInstallCLI.ps1..."
-            & $scriptPath
-            echo "Updating PATH environment variable to include Flyway CLI Path"
-              echo "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          } 
-          else {
-            echo "Error: Script not found at path $scriptPath"
-            exit 1
-          }
+          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
+          "C:\FlywayCLI" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database
       - name: Validate Migrate Scripts
@@ -100,8 +94,9 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
+          Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
           $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
-          $result = Invoke-Sqlcmd -ServerInstance "localhost\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query $query
+          $result = Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query $query
           Write-Host "Found $($result.TestCount) tSQLt test(s)"
           if ($result.TestCount -eq 0) {
               Write-Host "::warning::No tests found!"
@@ -113,7 +108,7 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          Invoke-Sqlcmd -ServerInstance "localhost\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+          Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
 
       # Step 4c - Publish Test Results as Artifact
       - name: Publish Test Results as Artifact
