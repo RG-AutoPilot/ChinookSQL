@@ -49,6 +49,24 @@ jobs:
           & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
           "C:\FlywayCLI" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+      # Step 1 - Create Check Report (Drift Detection - Using Deployed Snapshot)
+      - name: Flyway Reset Build
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway clean -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=true" -cleanDisabled=false ${{ env.CUSTOM_PARAMS }}
+      # Step 2a- Create Check Report (Drift Detection - Using Deployed Snapshot)
+      - name: Flyway Check Report - Dryrun
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway check -dryrun -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-reportEnabled=true" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" ${{ env.CUSTOM_PARAMS }}
+
+      # Step 2b - Create Check Report (Changes and Code Analysis)
+      - name: Flyway Check Report - Code Analysis
+        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+        run: |
+          flyway check -changes -code -environment="Test" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
+
+
       # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database
       - name: Validate Migrate Scripts
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
@@ -56,25 +74,25 @@ jobs:
           flyway clean info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="${{ secrets.FLYWAY_TOKEN }}"
           
 
-      # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database
+      # Step 4 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database
       - name: Validate Migrate Scripts
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
           flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="${{ secrets.FLYWAY_TOKEN }} -provisionMode=reprovision"
 
-      # Step 3a - Create Check Report (Drift Detection - Using Deployed Snapshot)
+      # Step 5 - Create Check Report (Drift Detection - Using Deployed Snapshot)
       - name: Flyway Check Report - Dryrun
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
           flyway check -dryrun -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-reportEnabled=true" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" ${{ env.CUSTOM_PARAMS }}
 
-      # Step 3b - Create Check Report (Changes and Code Analysis)
+      # Step 6 - Create Check Report (Changes and Code Analysis)
       - name: Flyway Check Report - Code Analysis
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway check -changes -code -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
+          flyway check -changes -code -environment="Test" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" "-check.buildEnvironment=${{ env.ENVIRONMENT }}" "-environments.${{ env.ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportFilename=${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html" "-check.rulesLocation=${{ GITHUB.WORKSPACE }}\rules" "-check.rulesConfig=${{ GITHUB.WORKSPACE }}\sqlfluff.cfg" "-reportEnabled=true" ${{ env.CUSTOM_PARAMS }}
 
-      # Step 3c - Upload SARIF code analysis results to GitHub Code Scanning
+      # Step 7 - Upload SARIF code analysis results to GitHub Code Scanning
       - name: Upload SARIF to GitHub Code Scanning
         if: ${{ env.EXECUTE_BUILD == 'true' && always() }}
         uses: github/codeql-action/upload-sarif@v4
@@ -82,13 +100,13 @@ jobs:
           sarif_file: ${{ github.workspace }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ github.run_id }}-Check-Report-code-review.sarif
           category: flyway-code-analysis
 
-      # Step 4 - Install Unit Tests via Flyway Prepare Deploy
+      # Step 8 - Install Unit Tests via Flyway Prepare Deploy
       - name: Flyway - Install Unit Tests
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
           flyway prepare deploy -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -workingDirectory="${{ GITHUB.WORKSPACE }}\UnitTests" "-prepare.source=schemaModel" "-prepare.target=Build" "-prepare.types=deploy" "-prepare.scriptFilename=${{ GITHUB.WORKSPACE }}\UnitTests\Artifact\D_${{ env.SCRIPT_FILENAME }}" "-prepare.force=true" -configFiles="${{ GITHUB.WORKSPACE }}\UnitTests\flyway.toml" -schemaModelLocation="${{ GITHUB.WORKSPACE }}\UnitTests\schema-model"
 
-      # Step 4a - Check Test Count
+      # Step 9 - Check Test Count
       - name: Check Test Count
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         continue-on-error: true
@@ -102,7 +120,7 @@ jobs:
               Write-Host "::warning::No tests found!"
           }
 
-      # Step 4b - Run tSQLt Tests
+      # Step 10 - Run tSQLt Tests
       - name: Run tSQLt Tests
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         continue-on-error: true
@@ -110,7 +128,7 @@ jobs:
         run: |
           Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
 
-      # Step 4c - Publish Test Results as Artifact
+      # Step 11 - Publish Test Results as Artifact
       - name: Publish Test Results as Artifact
         if: always()
         continue-on-error: true
@@ -119,7 +137,7 @@ jobs:
           name: tsqlt-test-results-${{ github.run_number }}
           path: ${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml
 
-      # Step 4d - Publish Test Results to GitHub Checks
+      # Step 12 - Publish Test Results to GitHub Checks
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
         if: always()
@@ -129,7 +147,7 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
-      # Step 5 - Publish Check Report as Artifact
+      # Step 13 - Publish Check Report as Artifact
       - name: Publish Check Report as Artifact
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         uses: actions/upload-artifact@v4
@@ -137,7 +155,7 @@ jobs:
           name: flyway-reports-build
           path: ${{ GITHUB.WORKSPACE }}\reports\${{ env.DATABASE_NAME }}-CI-Run-${{ GITHUB.RUN_ID }}-Check-Report.html
 
-      # Step 6 - After migration scripts are validated, publish them as an artifact
+      # Step 14 - After migration scripts are validated, publish them as an artifact
       - name: Publish Validated Migration Scripts as Artifact
         if: ${{ env.publishArtifacts == 'true' && success() }}
         uses: actions/upload-artifact@v4
