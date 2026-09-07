@@ -147,7 +147,7 @@ displayName = "Build Database"
 provisioner = "clean"
 
 [environments.shadow]
-url = "jdbc:sqlserver://localhost;instanceName=sqlexpress;databaseName=Chinook_Shadow;encrypt=false;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost:1433;databaseName=Chinook_Shadow;encrypt=false;trustServerCertificate=true"
 displayName = "Shadow database"
 provisioner = "create-database"
 user="sa"
