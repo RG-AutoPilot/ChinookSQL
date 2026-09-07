@@ -13,11 +13,6 @@ CREATE TABLE [dbo].[Customer]
 [Fax] [nvarchar] (24) NULL,
 [Email] [nvarchar] (60) NOT NULL,
 [SupportRepId] [int] NULL,
-[TestID] [int] NULL,
-[HuxDemo] [int] NULL,
-[TestRoger] [int] NULL,
-[SDRDemo] [int] NULL,
-[TestDemo] [int] NULL,
 [CustomerLoyalty] [nvarchar] (24) NULL,
 [SalesRep] [nvarchar] (60) NULL,
 [PricePaid] [decimal] (10, 2) NULL
