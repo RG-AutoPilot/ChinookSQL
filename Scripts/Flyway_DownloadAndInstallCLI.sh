@@ -232,7 +232,8 @@ fi
 # ---------------------------
 # Verify installation
 # ---------------------------
-if flyway --version >/dev/null 2>&1; then
+echo "Verifying Flyway installation..."
+if flyway --version; then
     echo "Flyway $FLYWAY_VERSION installed successfully and running."
     echo ""
     echo "==========================================="
@@ -251,6 +252,15 @@ if flyway --version >/dev/null 2>&1; then
     echo "Or start a new terminal session."
     echo "==========================================="
 else
-    echo "Flyway installation failed!"
+    RC=$?
+    echo "Flyway installation failed! 'flyway --version' exited with $RC."
+    echo "--- Diagnostics ---"
+    echo "which flyway: $(command -v flyway || echo 'not found on PATH')"
+    echo "INSTALL_DIR contents:"
+    ls -la "$INSTALL_DIR" 2>&1 || true
+    echo "java: $(command -v java || echo 'not found on PATH')"
+    if command -v java >/dev/null 2>&1; then
+        java -version 2>&1 || true
+    fi
     exit 1
 fi
