@@ -39,20 +39,30 @@ BEGIN
     ) y;
     SET @RowsTouched += @@ROWCOUNT;
 
-    -- Genre revenue split by country
+    -- Genre revenue split by country.
+    -- Per-genre track stats are pre-aggregated so the InvoiceLine rows
+    -- are not multiplied by the number of tracks in the genre.
+    WITH GenreStats AS (
+        SELECT
+            t.GenreId,
+            AVG(t.Milliseconds) AS AvgTrackLengthMs,
+            COUNT_BIG(*)        AS SameGenreTrackCount
+        FROM dbo.Track t
+        GROUP BY t.GenreId
+    )
     SELECT @Checksum = CHECKSUM_AGG(CHECKSUM(z.Country, z.GenreName, z.Revenue))
     FROM (
         SELECT
             i.BillingCountry AS Country,
             g.Name           AS GenreName,
             SUM(il.UnitPrice * il.Quantity) AS Revenue,
-            AVG(t.Milliseconds)             AS AvgTrackLengthMs,
-            COUNT(DISTINCT t2.TrackId)      AS SameGenreTrackCount
+            MAX(gs.AvgTrackLengthMs)        AS AvgTrackLengthMs,
+            MAX(gs.SameGenreTrackCount)     AS SameGenreTrackCount
         FROM dbo.InvoiceLine il
-        JOIN dbo.Invoice i ON i.InvoiceId = il.InvoiceId
-        JOIN dbo.Track   t ON t.TrackId   = il.TrackId
-        JOIN dbo.Genre   g ON g.GenreId   = t.GenreId
-        JOIN dbo.Track   t2 ON t2.GenreId = t.GenreId
+        JOIN dbo.Invoice   i  ON i.InvoiceId = il.InvoiceId
+        JOIN dbo.Track     t  ON t.TrackId   = il.TrackId
+        JOIN dbo.Genre     g  ON g.GenreId   = t.GenreId
+        JOIN GenreStats    gs ON gs.GenreId  = t.GenreId
         GROUP BY i.BillingCountry, g.Name
     ) z;
     SET @RowsTouched += @@ROWCOUNT;
@@ -69,16 +79,15 @@ BEGIN
     SET @RowsTouched += @@ROWCOUNT;
 
     -- Tracks sharing genre + media type ("related tracks" feature).
-    -- COUNT_BIG deliberate: COUNT(*) overflows on Rock when self-joined.
+    -- Self-join collapsed: pairs per (Genre, MediaType) = n * n.
     SELECT @Checksum = CHECKSUM_AGG(CHECKSUM(v.GenreId, v.MediaTypeId, v.PairCount))
     FROM (
         SELECT
-            t1.GenreId,
-            t1.MediaTypeId,
-            COUNT_BIG(*) AS PairCount
-        FROM dbo.Track t1
-        JOIN dbo.Track t2 ON t2.GenreId = t1.GenreId AND t2.MediaTypeId = t1.MediaTypeId
-        GROUP BY t1.GenreId, t1.MediaTypeId
+            t.GenreId,
+            t.MediaTypeId,
+            COUNT_BIG(*) * COUNT_BIG(*) AS PairCount
+        FROM dbo.Track t
+        GROUP BY t.GenreId, t.MediaTypeId
     ) v;
     SET @RowsTouched += @@ROWCOUNT;
 
