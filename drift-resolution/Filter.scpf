@@ -118,7 +118,7 @@
       </Synonym>
       <Table version="1">
         <Include>False</Include>
-        <Expression>((@SCHEMA = 'dbo') AND (@NAME = 'BDukeDrift')) OR ((@SCHEMA = 'dbo') AND (@NAME = 'Drift')) OR ((@SCHEMA = 'dbo') AND (@NAME = 'MikeChange'))</Expression>
+        <Expression>((@SCHEMA = 'dbo') AND (@NAME = 'iAmDrift'))</Expression>
       </Table>
       <User version="1">
         <Include>True</Include>
@@ -148,10 +148,6 @@
         <Include>True</Include>
         <Expression>TRUE</Expression>
       </ExternalTable>
-      <Data version="1">
-        <Include>False</Include>
-        <Expression>((@SCHEMA = 'dbo') AND (@NAME = 'AppConfig'))</Expression>
-      </Data>
     </Filters>
   </Filter>
 </NamedFilter>
