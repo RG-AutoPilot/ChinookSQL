@@ -9,7 +9,7 @@ on:
 
 jobs:
   generate-and-build:
-    runs-on: HuxLocal
+    runs-on: windows-latest
     permissions:
       contents: write
       pull-requests: write
