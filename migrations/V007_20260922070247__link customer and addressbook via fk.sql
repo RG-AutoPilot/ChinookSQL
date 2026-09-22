@@ -1,0 +1,27 @@
+﻿SET NUMERIC_ROUNDABORT OFF
+GO
+SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
+GO
+PRINT N'Altering [dbo].[AddressBook]'
+GO
+ALTER TABLE [dbo].[AddressBook] ADD
+[CustomerId] [int] NULL
+GO
+PRINT N'Creating index [IFK_AddressBookCustomerId] on [dbo].[AddressBook]'
+GO
+CREATE NONCLUSTERED INDEX [IFK_AddressBookCustomerId] ON [dbo].[AddressBook] ([CustomerId])
+GO
+PRINT N'Adding foreign keys to [dbo].[AddressBook]'
+GO
+ALTER TABLE [dbo].[AddressBook] ADD CONSTRAINT [FK_AddressBookCustomerId] FOREIGN KEY ([CustomerId]) REFERENCES [dbo].[Customer] ([CustomerId])
+GO
+
+SET NUMERIC_ROUNDABORT OFF
+GO
+SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS, NOCOUNT ON
+GO
+SET DATEFORMAT YMD
+GO
+SET XACT_ABORT ON
+GO
+

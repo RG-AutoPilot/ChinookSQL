@@ -1,6 +1,7 @@
 CREATE TABLE [dbo].[AddressBook]
 (
 [AddressBookId] [int] NOT NULL IDENTITY(1, 1),
+[CustomerId] [int] NULL,
 [FirstName] [nvarchar] (24) NULL,
 [LastName] [nvarchar] (24) NULL,
 [Age] [int] NULL,
@@ -10,4 +11,8 @@ CREATE TABLE [dbo].[AddressBook]
 )
 GO
 ALTER TABLE [dbo].[AddressBook] ADD CONSTRAINT [PK_AddressBook] PRIMARY KEY CLUSTERED ([AddressBookId])
+GO
+CREATE NONCLUSTERED INDEX [IFK_AddressBookCustomerId] ON [dbo].[AddressBook] ([CustomerId])
+GO
+ALTER TABLE [dbo].[AddressBook] ADD CONSTRAINT [FK_AddressBookCustomerId] FOREIGN KEY ([CustomerId]) REFERENCES [dbo].[Customer] ([CustomerId])
 GO
