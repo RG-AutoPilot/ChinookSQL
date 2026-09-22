@@ -147,11 +147,9 @@ displayName = "Build Database"
 provisioner = "clean"
 
 [environments.shadow]
-url = "jdbc:sqlserver://localhost:1433;databaseName=Chinook_Shadow;encrypt=false;trustServerCertificate=true"
+url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Shadow;encrypt=false;trustServerCertificate=true"
 displayName = "Shadow database"
 provisioner = "create-database"
-user="sa"
-password="${env.SQL_SA_PASSWORD}"
 
 [environments.development]
 url = "jdbc:sqlserver://chinookai.database.windows.net;authentication=sqlPassword;databaseName=Chinook_Dev;encrypt=mandatory;trustServerCertificate=true"
