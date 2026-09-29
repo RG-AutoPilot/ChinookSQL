@@ -2,14 +2,13 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON
 GO
---SET QUOTED_IDENTIFIER ON|OFF
---SET ANSI_NULLS ON|OFF
---GO
 CREATE PROCEDURE [dbo].[getAmsterdamClients]
-    @parameter_name AS INT
--- WITH ENCRYPTION, RECOMPILE, EXECUTE AS CALLER|SELF|OWNER| 'user_name'
 AS
 BEGIN
-    SELECT * FROM dbo.AddressBook
+    SET NOCOUNT ON;
+    SELECT ab.*
+    FROM dbo.AddressBook ab
+    JOIN dbo.Customer c ON c.CustomerId = ab.CustomerId
+    WHERE c.City = N'Amsterdam';
 END
 GO

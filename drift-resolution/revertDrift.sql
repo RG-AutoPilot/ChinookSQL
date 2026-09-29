@@ -2,17 +2,9 @@
 GO
 SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
 GO
-PRINT N'Dropping [dbo].[MikeChange]'
+PRINT N'Dropping [dbo].[iamDrift]'
 GO
-DROP TABLE [dbo].[MikeChange]
-GO
-PRINT N'Dropping [dbo].[Drift]'
-GO
-DROP TABLE [dbo].[Drift]
-GO
-PRINT N'Dropping [dbo].[BDukeDrift]'
-GO
-DROP TABLE [dbo].[BDukeDrift]
+DROP TABLE [dbo].[iamDrift]
 GO
 
 SET NUMERIC_ROUNDABORT OFF
@@ -23,7 +15,4 @@ SET DATEFORMAT YMD
 GO
 SET XACT_ABORT ON
 GO
-
-PRINT(N'Delete 1 row from [dbo].[AppConfig]')
-DELETE FROM [dbo].[AppConfig] WHERE [ConfigId] = 4
 

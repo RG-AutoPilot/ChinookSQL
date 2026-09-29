@@ -5,20 +5,20 @@
     "tool" : {
       "driver" : {
         "name" : "Redgate Flyway Code Review",
-        "version" : "13.1.0-rc2494",
-        "informationUri" : "https://help.red-gate.com/help/flyway-cli13/help_1.aspx?topic=check-code",
+        "version" : "13.7.0-rc2822",
+        "informationUri" : "https://help.red-gate.com/help/flyway-cli13/help_7.aspx?topic=check-code",
         "rules" : [ {
           "id" : "DM001",
           "shortDescription" : {
             "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
           },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_1.aspx?topic=rules/DM001"
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_7.aspx?topic=rules/DM001"
         }, {
           "id" : "AM04",
           "shortDescription" : {
             "text" : "Query produces an unknown number of result columns."
           },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_1.aspx?topic=rules/AM04"
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_7.aspx?topic=rules/AM04"
         } ]
       }
     },
@@ -31,13 +31,13 @@
       "locations" : [ {
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "migrations/V028_20260818103621__Add_AlbumGrossPay_column_to_Album_table,_create_getGrossPay_procedure,_refresh_views,_and_create_FlightStatus_table.sql",
+            "uri" : "migrations/V008_20260922112848__Create_getAmsterdamClients_stored_procedure,_add_TestID_column_to_CustomerProducts_table,_and_create_AmsterdamDemo_table.sql",
             "uriBaseId" : "%SRCROOT%"
           },
           "region" : {
-            "startLine" : 20,
+            "startLine" : 15,
             "startColumn" : 5,
-            "endLine" : 20,
+            "endLine" : 15,
             "endColumn" : 5
           }
         }
@@ -51,14 +51,14 @@
       "locations" : [ {
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "migrations/V028_20260818103621__Add_AlbumGrossPay_column_to_Album_table,_create_getGrossPay_procedure,_refresh_views,_and_create_FlightStatus_table.sql",
+            "uri" : "migrations/V008_20260922112848__Create_getAmsterdamClients_stored_procedure,_add_TestID_column_to_CustomerProducts_table,_and_create_AmsterdamDemo_table.sql",
             "uriBaseId" : "%SRCROOT%"
           },
           "region" : {
-            "startLine" : 20,
+            "startLine" : 15,
             "startColumn" : 5,
-            "endLine" : 20,
-            "endColumn" : 28
+            "endLine" : 15,
+            "endColumn" : 34
           }
         }
       } ]
