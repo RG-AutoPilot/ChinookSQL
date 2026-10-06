@@ -11,8 +11,8 @@
   DTS:LocaleID="2057"
   DTS:ObjectName="LoadGenres"
   DTS:PackageType="5"
-  DTS:VersionBuild="6"
-  DTS:VersionGUID="{9C4CA1C4-B9A3-4A32-AD87-F97C193819F6}">
+  DTS:VersionBuild="11"
+  DTS:VersionGUID="{CE970823-BEB4-442D-BE84-DAA29533C097}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -289,7 +289,7 @@
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="418.833310749797,107.766665955517" />
+          TopLeft="363.833313754864,143.299999041756" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -301,37 +301,37 @@
         <NodeLayout
           Size="151.2,41.6"
           Id="Package\Data Flow Task\Flat File Source"
-          TopLeft="661.666630514795,77.1333327969578" />
+          TopLeft="542.361081477807,101.544443738317" />
         <NodeLayout
           Size="179.2,41.6"
           Id="Package\Data Flow Task\ADO NET Destination"
-          TopLeft="693.749962095173,195.722220861194" />
+          TopLeft="539.0277483266,223.888887331993" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Flat File Source Output]"
-          TopLeft="737.266630514795,118.733332796958">
+          TopLeft="617.961081477807,143.144443738317">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="46.0833315803776,76.9888880642364"
+              EndConnector="10.6666668487933,80.7444435936759"
               Start="0,0"
-              End="46.0833315803776,69.4888880642364">
+              End="10.6666668487933,73.2444435936759">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,34.4944440321182" />
+                    End="0,36.372221796838" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,34.4944440321182"
-                    Point2="0,38.4944440321182"
-                    Point3="4,38.4944440321182" />
+                    Point1="0,36.372221796838"
+                    Point2="0,40.372221796838"
+                    Point3="4,40.372221796838" />
                   <mssgle:LineSegment
-                    End="42.0833315803776,38.4944440321182" />
+                    End="6.66666684879328,40.372221796838" />
                   <mssgle:CubicBezierSegment
-                    Point1="42.0833315803776,38.4944440321182"
-                    Point2="46.0833315803776,38.4944440321182"
-                    Point3="46.0833315803776,42.4944440321182" />
+                    Point1="6.66666684879328,40.372221796838"
+                    Point2="10.6666668487933,40.372221796838"
+                    Point3="10.6666668487933,44.372221796838" />
                   <mssgle:LineSegment
-                    End="46.0833315803776,69.4888880642364" />
+                    End="10.6666668487933,73.2444435936759" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>

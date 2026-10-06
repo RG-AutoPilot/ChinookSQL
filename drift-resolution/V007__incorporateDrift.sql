@@ -2,9 +2,9 @@
 GO
 SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
 GO
-PRINT N'Creating [dbo].[iamDrift]'
+PRINT N'Creating [dbo].[Drift]'
 GO
-CREATE TABLE [dbo].[iamDrift]
+CREATE TABLE [dbo].[Drift]
 (
 [Drift] [int] NULL
 )
