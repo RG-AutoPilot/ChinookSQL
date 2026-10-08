@@ -95,7 +95,7 @@ jobs:
         run: |
           Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
           $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
-          $result = Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query $query
+          $result = Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Query $query
           Write-Host "Found $($result.TestCount) tSQLt test(s)"
           if ($result.TestCount -eq 0) {
               Write-Host "::warning::No tests found!"
@@ -107,7 +107,7 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+          Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
 
       # Step 11 - Publish Test Results as Artifact
       - name: Publish Test Results as Artifact
