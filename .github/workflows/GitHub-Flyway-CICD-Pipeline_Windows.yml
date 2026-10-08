@@ -113,7 +113,7 @@ jobs:
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
           flyway prepare deploy -environment="Build" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -workingDirectory="${{ GITHUB.WORKSPACE }}\UnitTests" "-prepare.source=schemaModel" "-prepare.target=Build" "-prepare.types=deploy" "-prepare.scriptFilename=${{ GITHUB.WORKSPACE }}\UnitTests\Artifact\D_${{ env.SCRIPT_FILENAME }}" "-prepare.force=true" -configFiles="${{ GITHUB.WORKSPACE }}\UnitTests\flyway.toml" -schemaModelLocation="${{ GITHUB.WORKSPACE }}\UnitTests\schema-model"
-      # Step 3a - Check Test Count
+    # Step 9 - Check Test Count
       - name: Check Test Count
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         continue-on-error: true
@@ -121,18 +121,20 @@ jobs:
         run: |
           Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
           $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
-          $result = Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query $query
+          $result = Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query $query
           Write-Host "Found $($result.TestCount) tSQLt test(s)"
           if ($result.TestCount -eq 0) {
               Write-Host "::warning::No tests found!"
           }
-      # Step 3b - Run tSQLt Tests
+
+      # Step 10 - Run tSQLt Tests
       - name: Run tSQLt Tests
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         continue-on-error: true
         shell: pwsh
         run: |
-          Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -Username "${{ env.TARGET_DATABASE_USERNAME }}" -Password "${{ env.TARGET_DATABASE_PASSWORD }}" -Encrypt Mandatory -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+          Invoke-Sqlcmd -ServerInstance "${{ env.AZURE_SQL_SERVER }}" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+
       # Step 3c - Publish Test Results as Artifact
       - name: Publish Test Results
         if: always()
