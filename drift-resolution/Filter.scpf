@@ -118,7 +118,7 @@
       </Synonym>
       <Table version="1">
         <Include>False</Include>
-        <Expression>((@SCHEMA = 'dbo') AND (@NAME = 'iamDrift'))</Expression>
+        <Expression>((@SCHEMA = 'dbo') AND (@NAME = 'Drift'))</Expression>
       </Table>
       <User version="1">
         <Include>True</Include>
