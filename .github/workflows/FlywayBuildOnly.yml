@@ -23,7 +23,7 @@ jobs:
       displayName: 'Build'
       DATABASE_NAME: 'Chinook_Build'
       ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file.
-      AZURE_SQL_SERVER: 'chinookai.database.windows.net'
+      AZURE_SQL_SERVER: 'localhost'
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       REPORT_DATABASE_USERNAME: "${{ secrets.REPORT_DATABASE_USERNAME || secrets.TARGET_DATABASE_USERNAME }}"
