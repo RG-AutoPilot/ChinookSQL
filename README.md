@@ -14,3 +14,39 @@ TODO: Describe and show how to build your code and run the tests.
 # Contribute
 TODO: Explain how other users and developers can contribute to make your code better. 
 
+# IQVIA MCP / agentic workflow demo
+
+`dbo.IQVIA` stores synthetic workflow metadata, not patient data. Each row has
+an identity key, workflow name, status (`Pending`, `Running`, `Completed`, or
+`Failed`), and a UTC creation timestamp. `dbo.getIQVIAWorkflowReport` returns
+newest rows first, optionally filtered by workflow name and/or status.
+
+The demo illustrates the database-change path: an agent edits the schema model,
+Flyway MCP compares it with migrations and generates versioned/undo scripts,
+and the migration build pipeline validates deployment before review.
+The IQVIA migration scripts were authored manually because MCP generation was
+blocked by SQL Server integrated authentication in the task environment.
+The stored procedure queries demo data; it does not itself invoke MCP or an agent.
+
+After applying migrations through version `010_20261021150000`, run this
+transactional demo (the sample row is rolled back):
+
+```sql
+BEGIN TRANSACTION;
+
+INSERT INTO dbo.IQVIA (WorkflowName, Status)
+VALUES (N'MCP / agentic schema demo', N'Completed');
+
+EXEC dbo.getIQVIAWorkflowReport;
+EXEC dbo.getIQVIAWorkflowReport
+    @WorkflowName = N'MCP / agentic schema demo',
+    @Status = N'Completed';
+
+ROLLBACK TRANSACTION;
+```
+
+Focused tSQLt tests are included in the unit-test schema model and run with the
+existing Flyway build pipeline. After deploying that model to a test database,
+run `EXEC tSQLt.Run N'IQVIAWorkflowTests';`.
+The matching undo migration drops the procedure before the table and deletes
+any IQVIA demo rows; use it only when that data can be discarded.
