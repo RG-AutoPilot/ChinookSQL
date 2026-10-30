@@ -18,14 +18,14 @@ baselineOnMigrate = true
   rulesConfig = "sqlfluff.cfg"
   buildEnvironment = "Check"
 
-
 [flyway.sqlserver.clean]
 mode = "all"
 
 [flywayDesktop]
+enableMigrations = true
 developmentEnvironment = "development"
 shadowEnvironment = "shadow"
-enableMigrations = true
+deploymentPlatform = "PowerShell"
 
   [flywayDesktop.generate]
   undoScripts = true
