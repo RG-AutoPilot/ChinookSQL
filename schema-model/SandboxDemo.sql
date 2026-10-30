@@ -1,0 +1,5 @@
+CREATE TABLE dbo.SandboxDemo (
+    SandboxDemoId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_SandboxDemo PRIMARY KEY,
+    Note NVARCHAR(100) NULL
+);
+GO
