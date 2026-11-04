@@ -138,21 +138,9 @@ displayName = "Test Database"
 url = "jdbc:sqlserver://localhost;databaseName=Chinook_Prod;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Production Database"
 
-[environments.Check]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Check;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
-displayName = "Check Database"
-provisioner = "clean"
-
-[environments.Build]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Build;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
-displayName = "Build Database"
-provisioner = "clean"
-
-[environments.shadow]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Shadow;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
-displayName = "Shadow database"
-provisioner = "create-database"
-
 [environments.development]
-url = "jdbc:sqlserver://localhost;databaseName=Chinook_Dev;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://localhost;databaseName=Hux_Dev;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Development database"
+
+[environments.Check]
+url = "jdbc:sqlserver://localhost;databaseName=Chinook_Check;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"

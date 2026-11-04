@@ -6,7 +6,9 @@ CREATE TABLE [dbo].[AuditLog]
 [RecordId] [int] NOT NULL,
 [ChangedBy] [nvarchar] (256) NOT NULL,
 [ChangedDate] [datetime] NOT NULL CONSTRAINT [DF_AuditLog_ChangedDate] DEFAULT (getdate()),
-[Details] [nvarchar] (max) NULL
+[Details] [nvarchar] (max) NULL,
+[Huxley] [nvarchar] (max) NULL,
+[Steven] [nvarchar] (max) NULL
 )
 GO
 ALTER TABLE [dbo].[AuditLog] ADD CONSTRAINT [PK_AuditLog] PRIMARY KEY CLUSTERED ([AuditLogId])
