@@ -84,14 +84,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      - name: Install Flyway CLI
+      # Use the Flyway CLI already installed on the self-hosted runner (no download/upgrade)
+      - name: Use installed Flyway CLI
         shell: pwsh
-        env:
-          FLYWAY_VERSION: ${{ env.FLYWAY_VERSION }}
-          FLYWAY_INSTALL_DIRECTORY: ${{ env.FLYWAY_INSTALL_DIRECTORY }}
         run: |
-          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
-          "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "C:\FlywayCLI" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & "C:\FlywayCLI\flyway.cmd" --version
      
       # Step 2 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
       - name: Validate Migrate Scripts
@@ -197,14 +195,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Flyway CLI
+      # Use the Flyway CLI already installed on the self-hosted runner (no download/upgrade)
+      - name: Use installed Flyway CLI
         shell: pwsh
-        env:
-          FLYWAY_VERSION: ${{ env.FLYWAY_VERSION }}
-          FLYWAY_INSTALL_DIRECTORY: ${{ env.FLYWAY_INSTALL_DIRECTORY }}
         run: |
-          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
-          "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "C:\FlywayCLI" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & "C:\FlywayCLI\flyway.cmd" --version
 
       - name: Create Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
@@ -249,14 +245,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Flyway CLI
+      # Use the Flyway CLI already installed on the self-hosted runner (no download/upgrade)
+      - name: Use installed Flyway CLI
         shell: pwsh
-        env:
-          FLYWAY_VERSION: ${{ env.FLYWAY_VERSION }}
-          FLYWAY_INSTALL_DIRECTORY: ${{ env.FLYWAY_INSTALL_DIRECTORY }}
         run: |
-          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
-          "${{ env.FLYWAY_INSTALL_DIRECTORY }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "C:\FlywayCLI" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & "C:\FlywayCLI\flyway.cmd" --version
 
       - name: Create Check Reports
         if: ${{ env.generateReport == 'true' && success() }}

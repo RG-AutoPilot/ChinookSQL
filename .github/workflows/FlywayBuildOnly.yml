@@ -41,14 +41,12 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Flyway CLI
+      # Use the Flyway CLI already installed on the self-hosted runner (no download/upgrade)
+      - name: Use installed Flyway CLI
         shell: pwsh
-        env:
-          FLYWAY_VERSION: Latest
-          FLYWAY_INSTALL_DIRECTORY: C:\FlywayCLI
         run: |
-          & "${{ github.workspace }}\Scripts\Flyway_DownloadAndInstallCLI.ps1"
           "C:\FlywayCLI" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & "C:\FlywayCLI\flyway.cmd" --version
 
       # Step 1 - Create Check Report (Drift Detection - Using Deployed Snapshot)
       - name: Flyway Reset Build
