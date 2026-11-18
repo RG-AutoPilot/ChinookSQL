@@ -4,3 +4,5 @@
 *.artifact
 report.html
 report.json
+# Flyway licence permit - never commit
+permit.txt

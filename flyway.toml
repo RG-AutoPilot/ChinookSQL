@@ -130,6 +130,15 @@ transportClrDataTypesAsBinary = false
   schema = "dbo"
   table = "AppConfig"
 
+[environments.Build]
+url = "jdbc:sqlserver://localhost;databaseName=Chinook_Build;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
+displayName = "Build Database"
+provisioner = "clean"
+
+[environments.shadow]
+url = "jdbc:sqlserver://localhost;databaseName=Chinook_Shadow;encrypt=mandatory;integratedSecurity=true;trustServerCertificate=true"
+provisioner = "clean"
+
 [environments.Test]
 url = "jdbc:sqlserver://localhost;databaseName=Chinook_Test;encrypt=optional;integratedSecurity=true;trustServerCertificate=true"
 displayName = "Test Database"

@@ -1,5 +1,8 @@
 CREATE TABLE [dbo].[IVMCPChange]
 (
+[IVMCPChangeId] [int] NOT NULL IDENTITY(1, 1),
 [MCPChange] [int] NULL
 )
+GO
+ALTER TABLE [dbo].[IVMCPChange] ADD CONSTRAINT [PK_IVMCPChange] PRIMARY KEY CLUSTERED ([IVMCPChangeId])
 GO

@@ -8,8 +8,9 @@ CREATE TABLE [dbo].[AddressBook]
 [TwitterID] [nchar] (10) NULL,
 [Test] [nchar] (10) NULL,
 [ReviewId] [int] NULL,
-[SocialSignUp] [int] NULL,
-[MCPChange] [int] NULL
+[SocialSingUp] [int] NULL,
+[MCPChange] [int] NULL,
+[PayingCustomer] [int] NULL
 )
 GO
 ALTER TABLE [dbo].[AddressBook] ADD CONSTRAINT [PK_AddressBook] PRIMARY KEY CLUSTERED ([AddressBookId])

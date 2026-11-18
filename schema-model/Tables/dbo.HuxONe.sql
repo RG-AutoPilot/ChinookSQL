@@ -1,5 +1,8 @@
 CREATE TABLE [dbo].[HuxONe]
 (
+[HuxONeId] [int] NOT NULL IDENTITY(1, 1),
 [HuxChange] [int] NULL
 )
+GO
+ALTER TABLE [dbo].[HuxONe] ADD CONSTRAINT [PK_HuxONe] PRIMARY KEY CLUSTERED ([HuxONeId])
 GO

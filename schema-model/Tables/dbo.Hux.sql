@@ -1,5 +1,8 @@
 CREATE TABLE [dbo].[Hux]
 (
+[HuxId] [int] NOT NULL IDENTITY(1, 1),
 [HuxChange] [int] NULL
 )
+GO
+ALTER TABLE [dbo].[Hux] ADD CONSTRAINT [PK_Hux] PRIMARY KEY CLUSTERED ([HuxId])
 GO

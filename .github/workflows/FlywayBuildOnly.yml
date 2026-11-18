@@ -9,7 +9,7 @@ on:
 
 jobs:
   generate-and-build:
-    runs-on: huxLocal
+    runs-on: MCPAgent # Self-hosted Windows runner
     permissions:
       contents: write
       pull-requests: write
@@ -31,6 +31,7 @@ jobs:
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
       EXECUTE_BUILD: 'true' # Turn to false to skip the build stage tasks
       publishArtifacts: 'true' # Turn to false to skip the artifact upload
+      FLYWAY_PUBLISH_RESULT: 'false' # Set to true to publish results to Flyway Pipelines
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -71,7 +72,7 @@ jobs:
       - name: Validate Migrate Scripts
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="${{ secrets.FLYWAY_TOKEN }} -provisionMode=reprovision"
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -cleanDisabled=false -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }} -email="Huxley.Kendell@Red-Gate.com" -token="${{ secrets.FLYWAY_TOKEN }}" -provisionMode=reprovision
 
       # Step 7 - Upload SARIF code analysis results to GitHub Code Scanning
       - name: Upload SARIF to GitHub Code Scanning

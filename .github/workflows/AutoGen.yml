@@ -12,7 +12,7 @@ on:
 
 jobs:
   generate-and-build:
-    runs-on: windows-latest
+    runs-on: MCPAgent # Self-hosted Windows runner with local SQL Server
     permissions:
       contents: write
       pull-requests: write
@@ -59,17 +59,15 @@ jobs:
           }
 
       # Step 2 - Generate migration script from schema model diff
-      # Only runs on pull requests - skipped for manual workflow_dispatch runs
+      # Runs on pull requests and manual workflow_dispatch runs
       - name: Generate Flyway migration script
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
             $ARTIFACT_FILENAME = "${{ GITHUB.WORKSPACE }}\Flyway.Migrations.differences-$(get-date -f yyyyMMdd).zip"  # Output file for generated migrations
             $WORKING_DIRECTORY = "${{ GITHUB.WORKSPACE }}"  # Path to Flyway project root
             $SOURCE_ENVIRONMENT = "schemaModel"  # Source environment name (desired state)
             $TARGET_ENVIRONMENT = "migrations"  # Target environment name (existing migrations)
             $BUILD_ENVIRONMENT = "shadow"  # Build database environment name for validation
-            $BUILD_ENVIRONMENT_USERNAME = "Sa"  # Build database username (leave empty for flyway.toml)
-            $BUILD_ENVIRONMENT_PASSWORD = "Redgate1"  # Build database password (use env variables in production)
             $FLYWAY_VERSION_DESCRIPTION = "FlywayCLI_AutomatedMigrationScript"  # Description for migration script filename
 
             # Calculate the differences between two entities (Databases/Folders & More) #
@@ -77,8 +75,6 @@ jobs:
             "-diff.source=$SOURCE_ENVIRONMENT" `
             "-diff.target=$TARGET_ENVIRONMENT" `
             "-diff.buildEnvironment=$BUILD_ENVIRONMENT" `
-            "-environments.$BUILD_ENVIRONMENT.user=$BUILD_ENVIRONMENT_USERNAME" `
-            "-environments.$BUILD_ENVIRONMENT.password=$BUILD_ENVIRONMENT_PASSWORD" `
             "-diff.artifactFilename=$ARTIFACT_FILENAME" `
             "-generate.artifactFilename=$ARTIFACT_FILENAME" `
             "-generate.description=$FLYWAY_VERSION_DESCRIPTION" `
@@ -90,15 +86,15 @@ jobs:
         shell: pwsh
 
       # Step 2a - Commit and push generated migration back to the PR branch
-      # Only runs on pull requests - skipped for manual workflow_dispatch runs
+      # Runs on pull requests and manual workflow_dispatch runs
       - name: Commit and push migration script back to PR branch
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .\migrations\*.sql
           git commit -m "Auto-generated Flyway migration script for schema change [skip ci]" || echo "No changes to commit."
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
@@ -142,7 +138,7 @@ jobs:
         shell: pwsh
         run: |
           $query = "SELECT COUNT(*) AS TestCount FROM tSQLt.Tests"
-          $result = Invoke-Sqlcmd -ServerInstance "localhost\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query $query
+          $result = Invoke-Sqlcmd -ServerInstance "localhost" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query $query
           Write-Host "Found $($result.TestCount) tSQLt test(s)"
           if ($result.TestCount -eq 0) {
               Write-Host "::warning::No tests found!"
@@ -154,7 +150,7 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          Invoke-Sqlcmd -ServerInstance "localhost\sqlexpress" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
+          Invoke-Sqlcmd -ServerInstance "localhost" -Database "${{ env.DATABASE_NAME }}" -TrustServerCertificate -Query "BEGIN TRY EXEC tSQLt.RunAll END TRY BEGIN CATCH END CATCH; EXEC tSQLt.XmlResultFormatter" -MaxCharLength 1000000 | %{ $out = $out + $_[0]}; $out > "${{ GITHUB.WORKSPACE }}\UnitTests\TestResults\DatabaseTestResults.junit.xml"
 
       # Step 4c - Publish Test Results as Artifact
       - name: Publish Test Results as Artifact

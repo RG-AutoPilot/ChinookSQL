@@ -65,7 +65,7 @@ jobs:
       contents: read
     name: Deploy Build
     # The type of runner that the job will run on
-    runs-on: huxLocal # GitHub-hosted Windows runner; Flyway CLI is installed via Chocolatey in the first step
+    runs-on: MCPAgent # Self-hosted Windows runner
     environment: 'build'
     env:
       stage: 'Build'
@@ -178,7 +178,7 @@ jobs:
   test:
     name: Deploy Test
     # The type of runner that the job will run on
-    runs-on: huxLocal # GitHub-hosted Windows runner
+    runs-on: MCPAgent # Self-hosted Windows runner
     environment: 'test' # This refers to GitHub's Environment name
     if: ${{ true }} #Set this variable to false to temporarily disable the job
     needs: build
@@ -227,7 +227,7 @@ jobs:
   prod:
     name: Deploy Prod
     # The type of runner that the job will run on
-    runs-on: huxLocal # GitHub-hosted Windows runner
+    runs-on: MCPAgent # Self-hosted Windows runner
     environment: 'prod'
     if: ${{ true }}
     needs: test

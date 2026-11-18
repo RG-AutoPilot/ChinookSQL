@@ -1,5 +1,8 @@
 CREATE TABLE [dbo].[DevMCPTable]
 (
+[DevMCPTableId] [int] NOT NULL IDENTITY(1, 1),
 [MCPChange] [int] NULL
 )
+GO
+ALTER TABLE [dbo].[DevMCPTable] ADD CONSTRAINT [PK_DevMCPTable] PRIMARY KEY CLUSTERED ([DevMCPTableId])
 GO

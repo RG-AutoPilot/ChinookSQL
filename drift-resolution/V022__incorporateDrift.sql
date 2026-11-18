@@ -4,8 +4,14 @@ SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDE
 GO
 PRINT N'Creating [dbo].[Drift]'
 GO
-IF OBJECT_ID(N'[dbo].[Drift]', 'U') IS NULL
 CREATE TABLE [dbo].[Drift]
+(
+[Drift] [int] NULL
+)
+GO
+PRINT N'Creating [dbo].[NilsDrift]'
+GO
+CREATE TABLE [dbo].[NilsDrift]
 (
 [Drift] [int] NULL
 )
