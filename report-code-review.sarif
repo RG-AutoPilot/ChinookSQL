@@ -5,50 +5,26 @@
     "tool" : {
       "driver" : {
         "name" : "Redgate Flyway Code Review",
-        "version" : "13.9.1-rc2923",
-        "informationUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=check-code",
+        "version" : "13.12.1-rc3157",
+        "informationUri" : "https://help.red-gate.com/help/flyway-cli13/help_12.aspx?topic=check-code",
         "rules" : [ {
           "id" : "DM001",
           "shortDescription" : {
             "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
           },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/DM001"
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_12.aspx?topic=rules/DM001"
         }, {
-          "id" : "DM004",
+          "id" : "HK001",
           "shortDescription" : {
-            "text" : "DROP TABLE must include an existence check (IF EXISTS) to ensure idempotency"
+            "text" : "Object name not permitted by naming standards - Stop naming objects after yourself!"
           },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/DM004"
-        }, {
-          "id" : "DM006",
-          "shortDescription" : {
-            "text" : "Hardcoded environment name detected - migrations must be environment-agnostic"
-          },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/DM006"
-        }, {
-          "id" : "RG01",
-          "shortDescription" : {
-            "text" : "Usage of DROP TABLE is discouraged."
-          },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/RG01"
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_12.aspx?topic=rules/HK001"
         }, {
           "id" : "AM04",
           "shortDescription" : {
             "text" : "Query produces an unknown number of result columns."
           },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/AM04"
-        }, {
-          "id" : "AM05",
-          "shortDescription" : {
-            "text" : "Join clauses should be fully qualified."
-          },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/AM05"
-        }, {
-          "id" : "ST06",
-          "shortDescription" : {
-            "text" : "Select wildcards then simple targets before calculations and aggregates."
-          },
-          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_9.aspx?topic=rules/ST06"
+          "helpUri" : "https://help.red-gate.com/help/flyway-cli13/help_12.aspx?topic=rules/AM04"
         } ]
       }
     },
@@ -61,134 +37,34 @@
       "locations" : [ {
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
+            "uri" : "migrations/V024__album_review_score_and_addressbooktest.sql",
             "uriBaseId" : "%SRCROOT%"
           },
           "region" : {
-            "startLine" : 158,
+            "startLine" : 20,
             "startColumn" : 5,
-            "endLine" : 158,
+            "endLine" : 20,
             "endColumn" : 5
           }
         }
       } ]
     }, {
-      "ruleId" : "DM001",
+      "ruleId" : "HK001",
       "level" : "error",
       "message" : {
-        "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
+        "text" : "Object name not permitted by naming standards - Stop naming objects after yourself!"
       },
       "locations" : [ {
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
+            "uri" : "migrations/V024__album_review_score_and_addressbooktest.sql",
             "uriBaseId" : "%SRCROOT%"
           },
           "region" : {
-            "startLine" : 171,
-            "startColumn" : 5,
-            "endLine" : 171,
-            "endColumn" : 5
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "DM001",
-      "level" : "error",
-      "message" : {
-        "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 184,
-            "startColumn" : 5,
-            "endLine" : 184,
-            "endColumn" : 5
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "DM001",
-      "level" : "error",
-      "message" : {
-        "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 204,
-            "startColumn" : 5,
-            "endLine" : 204,
-            "endColumn" : 5
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "DM004",
-      "level" : "error",
-      "message" : {
-        "text" : "DROP TABLE must include an existence check (IF EXISTS) to ensure idempotency"
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 124,
-            "startColumn" : 4,
-            "endLine" : 124,
-            "endColumn" : 4
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "DM006",
-      "level" : "error",
-      "message" : {
-        "text" : "Hardcoded environment name detected - migrations must be environment-agnostic"
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 347,
-            "startColumn" : 85,
-            "endLine" : 347,
-            "endColumn" : 85
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "RG01",
-      "level" : "error",
-      "message" : {
-        "text" : "Usage of DROP TABLE is discouraged."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 125,
-            "startColumn" : 1,
-            "endLine" : 125,
-            "endColumn" : 31
+            "startLine" : 35,
+            "startColumn" : 2,
+            "endLine" : 35,
+            "endColumn" : 2
           }
         }
       } ]
@@ -201,154 +77,14 @@
       "locations" : [ {
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
+            "uri" : "migrations/V024__album_review_score_and_addressbooktest.sql",
             "uriBaseId" : "%SRCROOT%"
           },
           "region" : {
-            "startLine" : 158,
-            "startColumn" : 5,
-            "endLine" : 158,
-            "endColumn" : 34
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "AM04",
-      "level" : "error",
-      "message" : {
-        "text" : "Query produces an unknown number of result columns."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 171,
-            "startColumn" : 5,
-            "endLine" : 171,
-            "endColumn" : 31
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "AM04",
-      "level" : "error",
-      "message" : {
-        "text" : "Query produces an unknown number of result columns."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 184,
-            "startColumn" : 5,
-            "endLine" : 184,
-            "endColumn" : 28
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "AM04",
-      "level" : "error",
-      "message" : {
-        "text" : "Query produces an unknown number of result columns."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 204,
-            "startColumn" : 5,
-            "endLine" : 204,
-            "endColumn" : 39
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "AM05",
-      "level" : "error",
-      "message" : {
-        "text" : "Join clauses should be fully qualified."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 228,
-            "startColumn" : 5,
-            "endLine" : 228,
-            "endColumn" : 9
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "ST06",
-      "level" : "error",
-      "message" : {
-        "text" : "Select wildcards then simple targets before calculations and aggregates."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V005_20260901120230__Add_audit_logging,_review_systems,_and_staff_management_features.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 242,
-            "startColumn" : 5,
-            "endLine" : 250,
-            "endColumn" : 44
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "DM001",
-      "level" : "error",
-      "message" : {
-        "text" : "SELECT * is not permitted - explicitly list required columns to enforce schema contract"
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V006_20261002110544__Add_revenue_tracking_and_review_system.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 25,
-            "startColumn" : 5,
-            "endLine" : 25,
-            "endColumn" : 5
-          }
-        }
-      } ]
-    }, {
-      "ruleId" : "AM04",
-      "level" : "error",
-      "message" : {
-        "text" : "Query produces an unknown number of result columns."
-      },
-      "locations" : [ {
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "migrations/V006_20261002110544__Add_revenue_tracking_and_review_system.sql",
-            "uriBaseId" : "%SRCROOT%"
-          },
-          "region" : {
-            "startLine" : 25,
-            "startColumn" : 5,
-            "endLine" : 25,
-            "endColumn" : 37
+            "startLine" : 20,
+            "startColumn" : 12,
+            "endLine" : 20,
+            "endColumn" : 13
           }
         }
       } ]

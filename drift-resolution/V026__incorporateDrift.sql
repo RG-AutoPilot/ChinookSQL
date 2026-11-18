@@ -2,16 +2,18 @@
 GO
 SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
 GO
-PRINT N'Creating [dbo].[Drift]'
+PRINT N'Creating [dbo].[DriftTable]'
 GO
-CREATE TABLE [dbo].[Drift]
+IF OBJECT_ID(N'[dbo].[DriftTable]', 'U') IS NULL
+CREATE TABLE [dbo].[DriftTable]
 (
-[Drift] [int] NULL
+[TestDBDrift] [int] NULL
 )
 GO
-PRINT N'Creating [dbo].[NilsDrift]'
+PRINT N'Creating [dbo].[Drift]'
 GO
-CREATE TABLE [dbo].[NilsDrift]
+IF OBJECT_ID(N'[dbo].[Drift]', 'U') IS NULL
+CREATE TABLE [dbo].[Drift]
 (
 [Drift] [int] NULL
 )
