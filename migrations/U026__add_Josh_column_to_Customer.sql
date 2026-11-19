@@ -2,19 +2,18 @@
 GO
 SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
 GO
-PRINT N'Creating [dbo].[Drift]'
+PRINT N'Altering [dbo].[Customer]'
 GO
-CREATE TABLE [dbo].[Drift]
-(
-[Drift] [int] NULL
-)
+ALTER TABLE [dbo].[Customer] DROP
+COLUMN [Josh]
 GO
-PRINT N'Creating [dbo].[NilsDrift]'
+PRINT N'Refreshing [dbo].[vw_CustomerInvoiceSummary]'
 GO
-CREATE TABLE [dbo].[NilsDrift]
-(
-[Drift] [int] NULL
-)
+EXEC sp_refreshview N'[dbo].[vw_CustomerInvoiceSummary]'
+GO
+PRINT N'Refreshing [dbo].[vw_EmployeePerformance]'
+GO
+EXEC sp_refreshview N'[dbo].[vw_EmployeePerformance]'
 GO
 
 SET NUMERIC_ROUNDABORT OFF

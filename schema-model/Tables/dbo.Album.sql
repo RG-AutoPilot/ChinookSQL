@@ -6,7 +6,8 @@ CREATE TABLE [dbo].[Album]
 [AlbumGrossPay] [int] NULL,
 [GrossRevenueDollar] [int] NULL,
 [AlbumCopyright] [nvarchar] (24) NULL,
-[TestID] [int] NULL
+[TestID] [int] NULL,
+[AlbumReviewScore] [int] NULL
 )
 GO
 ALTER TABLE [dbo].[Album] ADD CONSTRAINT [PK_Album] PRIMARY KEY CLUSTERED ([AlbumId])
