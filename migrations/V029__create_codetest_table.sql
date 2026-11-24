@@ -1,0 +1,31 @@
+SET NUMERIC_ROUNDABORT OFF
+GO
+SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
+GO
+PRINT N'Creating [dbo].[CodeTest]'
+GO
+CREATE TABLE [dbo].[CodeTest]
+(
+[AddressBookId] [int] NOT NULL IDENTITY(1, 1),
+[CustomerId] [int] NULL,
+[FirstName] [nvarchar] (24) NULL,
+[LastName] [nvarchar] (24) NULL,
+[Age] [int] NULL,
+[TwitterID] [nchar] (10) NULL,
+[Test] [nchar] (10) NULL,
+[ReviewId] [int] NULL,
+[SocialSingUp] [int] NULL,
+[MCPChange] [int] NULL,
+[PayingCustomer] [int] NULL
+)
+GO
+
+SET NUMERIC_ROUNDABORT OFF
+GO
+SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS, NOCOUNT ON
+GO
+SET DATEFORMAT YMD
+GO
+SET XACT_ABORT ON
+GO
+

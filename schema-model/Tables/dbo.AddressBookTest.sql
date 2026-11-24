@@ -1,5 +1,6 @@
 CREATE TABLE [dbo].[AddressBookTest]
 (
-[Huxley] [int] NULL
+[Huxley] [int] NULL,
+Test [int] NULL
 )
 GO

@@ -10,11 +10,6 @@ CREATE PROCEDURE [dbo].[getAlbum]
 -- WITH ENCRYPTION, RECOMPILE, EXECUTE AS CALLER|SELF|OWNER| 'user_name'
 AS
 BEGIN
-        SELECT ReviewId,
-           AlbumId,
-           CustomerId,
-           Rating,
-           ReviewText,
-           ReviewDate FROM dbo.AlbumReview
+    SELECT * FROM dbo.AlbumReview
 END
 GO

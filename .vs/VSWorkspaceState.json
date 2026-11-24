@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\schema-model",
+    "\\schema-model\\Tables"
   ],
+  "SelectedNode": "\\schema-model\\Tables\\dbo.CodeTest.sql",
   "PreviewInSolutionExplorer": false
 }
